@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="ru" class="folder">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Реализованные мной интеграции</title>
+<script>const folderView = true;</script>
+<style>
+  :root{--bg:#060a12;--card:#0c1220;--line:#1a2640;--tx:#e6ecf8;--dim:#7686a6;--ac:#47e3b0;
+    --crm:#ff8a5c;--pay:#3ee0a4;--erp:#ffd24d;--ship:#62b6ff;--mp:#c995ff;--msg:#4fe0ee;--tel:#ff77b0;--an:#a6e86a}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.55 system-ui,"Segoe UI",sans-serif}
+  .wrap{max-width:1300px;margin:0 auto;padding:0 22px 70px}
+  h1{margin:22px 0 4px;font-size:clamp(24px,3.6vw,40px);letter-spacing:-.01em} .sub{color:var(--dim);margin:0 0 16px;max-width:680px}
+  .kpi{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .kpi div{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 14px;min-width:140px}
+  .kpi b{display:block;font:700 22px "Courier New",monospace;color:var(--ac)} .kpi span{font-size:12px;color:var(--dim)}
+  .ctl{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+  .chip{background:none;border:1px solid var(--line);color:var(--tx);border-radius:99px;padding:3px 11px;font-size:12.5px;cursor:pointer;display:flex;gap:6px;align-items:center}.chip i{width:8px;height:8px;border-radius:50%;display:block}.chip.off{opacity:.35}
+  .ctl label{color:var(--dim);font-size:13px;display:flex;gap:8px;align-items:center} input[type=range]{accent-color:var(--ac);width:130px}
+  .btn{background:var(--ac);border:0;color:#04120c;font-weight:700;border-radius:8px;padding:5px 12px;cursor:pointer}
+  .grid{display:grid;grid-template-columns:1fr 330px;gap:14px}
+  .cv{position:relative;border:1px solid var(--line);border-radius:14px;background:radial-gradient(700px 400px at 15% 50%,#0f2a2a,var(--bg));height:600px;overflow:hidden}
+  canvas{width:100%;height:100%;display:block}
+  .side{display:flex;flex-direction:column;gap:12px;height:600px}
+  .log{flex:1;min-height:0;border:1px solid var(--line);border-radius:14px;background:var(--card);padding:10px 12px;overflow:hidden;font:12px/1.6 "Courier New",monospace}
+  .log h4{margin:0 0 6px;font:600 11px system-ui;letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
+  .log div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;animation:in .3s} @keyframes in{from{opacity:0;transform:translateX(10px)}}
+  .log .t{color:var(--dim)} .log .ok{color:var(--ac)}
+  .det{border:1px solid var(--line);border-radius:14px;background:var(--card);padding:14px;height:250px;overflow:auto}
+  .det h3{margin:0;font-size:18px} .det .k{font-size:12px;color:var(--dim)} .det ul{padding-left:18px;margin:4px 0}.det li{font-size:13px}
+  .tag{display:inline-block;border:1px solid var(--line);border-radius:6px;padding:0 7px;margin:0 4px 4px 0;font-size:11.5px;color:var(--dim)}
+  h2{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin:34px 0 10px}
+  .dep{display:grid;grid-template-columns:110px 1fr;gap:14px;border-bottom:1px solid var(--line);padding:10px 0}
+  .dep .v{font:700 13px "Courier New",monospace;color:var(--ac)} .dep .d{font-size:12px;color:var(--dim)} .dep li{margin:2px 0}.dep li.hl{color:#7ee7b2}
+  .cert{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.cert div{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:12px 14px}.cert div:before{content:"✔ passed";color:var(--ac);font:11px monospace;display:block}
+  @media(max-width:960px){.grid{grid-template-columns:1fr}.side{height:auto}.log{height:200px;flex:none}.cv{height:520px}.cert{grid-template-columns:1fr}.dep{grid-template-columns:1fr}}
+  .folder .wrap>h1,.folder .wrap>.sub,.folder .grid~*{display:none}
+  .folder .wrap{max-width:none;padding:16px}
+  .folder .grid{grid-template-columns:minmax(0,1fr) minmax(220px,25%)}
+  .folder .cv{height:max(430px,calc(100dvh - 184px),var(--rows-height,0px));background:radial-gradient(ellipse at center,#10282b,var(--bg) 75%)}
+  .folder .side{height:100%;min-height:0}
+  .folder .log{height:auto;flex:1}
+  .folder .det{height:42%;min-height:160px}
+  .folder .kpi div{flex:1;min-width:0}.folder .kpi{gap:7px}
+  .node-target{position:absolute;display:flex;align-items:center;gap:4px;transform:translate(-15px,-50%);padding:0;border:0;background:none;color:var(--tx);font:600 12px/1.2 system-ui;text-align:left;cursor:grab;touch-action:none;user-select:none}
+  .node-target.left{flex-direction:row-reverse;text-align:right;transform:translate(calc(-100% + 15px),-50%)}
+  .node-target:before{content:'';width:30px;height:32px;flex:none}
+  .node-target .brand{position:absolute;left:3px;top:50%;transform:translateY(-50%);width:24px;height:24px;border:3px solid var(--node-color);border-radius:7px;background:#fff;color:#152132;display:grid;place-items:center;overflow:hidden;font:700 10px system-ui}
+  .node-target.left .brand{left:auto;right:3px}.brand img{width:100%;height:100%;object-fit:contain}
+  .node-target span{display:grid;width:max-content;max-width:var(--label-space,110px);overflow:hidden}
+  .node-target b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .node-target small{color:#a0b1c7;font:11px monospace}
+  .node-target.dragging{cursor:grabbing;z-index:2}.node-target:focus-visible{outline:1px solid var(--ac);border-radius:6px}
+  .node-target.core{width:76px;height:76px;border-radius:50%;transform:translate(-50%,-50%)}
+  @media(max-width:780px){.folder .grid{grid-template-columns:minmax(0,1fr)}.folder .side{height:auto;display:grid}.folder .log{height:175px}.folder .det{height:auto}.folder .cv{height:max(440px,var(--rows-height,0px))}.folder .wrap{padding:10px}.folder .kpi{display:grid;grid-template-columns:1fr 1fr}.folder .chip{padding:4px 8px}}
+  .views{display:none}
+  .map-intro{display:none}
+  .folder .map-intro{display:grid;gap:8px;margin:0 0 12px;padding:10px 14px;background:var(--card);border-left:3px solid #54748f;border-radius:4px}
+  .map-intro p{margin:0;max-width:105ch;color:#c6d3e2;font-size:14px;line-height:1.5}
+  .map-intro strong{color:var(--tx)}
+  #roles{display:none}
+  .folder #roles{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:8px 0}
+  .role-choice{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--tx);font:inherit;font-size:13px;cursor:pointer}
+  .role-choice[aria-pressed=true]{border-color:currentColor}
+  .role-mark{display:inline-block;flex:none;width:22px;border-top:3px solid var(--role)}
+  .role-mark.team{border-top-style:dashed}
+  .contribution{display:flex;align-items:center;gap:7px;font-weight:600;margin-top:12px}
+  .folder .node-target[hidden],.folder .chip[hidden]{display:none}
+  .folder .node-target:not(.core) > span{background:#091321f0;padding:2px 4px;border-radius:4px}
+  .folder .node-target b{color:var(--node-color)}
+  .folder .node-target[data-role=team] .brand{border-radius:50%}
+  .folder .node-target[data-role=both] .brand{border-right-color:var(--team-color);border-bottom-color:var(--team-color)}
+  .folder .node-target[data-role=both] b{text-decoration:underline dashed var(--team-color);text-underline-offset:2px}
+  @media(min-width:680px) and (max-width:1100px){
+    .folder .wrap{padding:12px}.folder .kpi{display:flex}
+    .folder .grid{grid-template-columns:minmax(0,1fr) minmax(200px,29%);gap:10px;align-items:stretch}
+    .folder .side{display:flex;height:auto;min-height:0}
+    .folder .det{order:-1;flex:1;height:auto}.folder .log{height:190px;flex:1}
+    .folder .cv{height:max(440px,calc(100dvh - 214px),var(--rows-height))}
+    .folder .chip,.folder .btn{min-height:38px}
+  }
+  @media(max-width:679px){
+    .folder .wrap{padding:8px}
+    .folder .kpi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-bottom:4px}
+    .folder .kpi div{padding:6px;border-radius:6px}.folder .kpi b{font-size:16px}.folder .kpi span{font-size:10px;line-height:1.15;display:block}
+    .folder #chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin:0;padding:4px 0 8px}
+    .folder .chip{flex:none;white-space:nowrap}.folder .chip,.folder .btn{min-height:36px}
+    .folder .ctl{gap:6px;margin-bottom:6px}.folder .ctl input{width:clamp(60px,16vw,100px)}
+    .folder .views{display:flex;position:sticky;top:0;z-index:4;padding:3px;background:#111c2b;border-radius:8px;margin-bottom:6px}
+    .views button{flex:1;border:0;background:transparent;color:var(--dim);min-height:40px;font:inherit;border-radius:5px}
+    .views button[aria-pressed=true]{color:#04140f;background:var(--ac);font-weight:650}
+    .folder .grid{display:block}.folder .side{display:contents}
+    .folder .cv,.folder .det,.folder .log{display:none}
+    .folder[data-view=map] .cv,.folder[data-view=service] .det,.folder[data-view=log] .log{display:block}
+    .folder .log,.folder .det{height:auto;min-height:180px}
+    .folder .log div{white-space:normal;overflow-wrap:anywhere;padding:3px 0}
+    .folder .cv{height:max(390px,calc(100dvh - 200px),var(--rows-height))}
+    .folder .node-target:before{height:40px}
+  }
+  .folder .cv{background:url("desktop-assets/map-stars.png") repeat,radial-gradient(ellipse 42% 310px at 33% 110px,#193044aa,transparent),radial-gradient(ellipse 38% 230px at 74% 180px,#33213788,transparent),#080e19}
+  .folder .node-target.core{z-index:1;display:block;width:clamp(82px,8vw,116px);height:auto;aspect-ratio:1;padding:0;border:0;background:transparent var(--star) center/120% no-repeat}
+  .folder .node-target.core b{position:absolute;bottom:4%;right:8%;display:grid;place-items:center;width:21px;height:21px;border:1px solid #9fb6cb88;border-radius:50%;background:#101d2bed;color:#eaf6ff;font:600 12px/1 system-ui}
+
+  .folder .node-target.core:before{display:none}
+  .folder #chips .chip{min-height:32px;padding:5px 11px;border:1px solid #5e9bc1;background:#19394e;color:#eaf8ff;font-weight:600;opacity:1}
+  .folder #chips .chip:before{content:'✓';color:#96e4ff}
+  .folder #chips .chip.off{background:#101723;color:#a2b0c1;border-color:#46556a}
+  .folder #chips .chip.off:before{content:'+';color:inherit}
+  .folder #chips .chip:hover{border-color:#b1ecff;background:#284e67}
+  .folder #chips .chip:focus-visible{outline:2px solid white;outline-offset:1px}
+  @media(min-width:680px){
+    .folder .grid{grid-template-columns:minmax(0,1fr)}
+    .folder .grid:not(.has-selection) .side{display:none}
+    .folder .grid.has-selection{grid-template-columns:minmax(0,1fr) clamp(205px,23%,330px)}
+    .folder .grid.has-selection .side{display:block;height:auto}
+    .folder .det{position:sticky;top:12px;height:auto;max-height:calc(100dvh - 24px)}
+  }
+  .folder .node-target.group-highlight span{outline:2px solid #baedff;border-radius:4px}
+  #category-status{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);z-index:5;width:max-content;max-width:90%;padding:7px 12px;border-radius:7px;background:#183448;color:#effaff;box-shadow:0 2px 10px #0007;pointer-events:none;text-align:center}
+  #category-status:empty{display:none}
+  @media(max-width:679px){
+    .folder #chips .chip{min-height:44px;white-space:normal;line-height:1.15;text-align:left;border-radius:8px}
+  }
+  .folder .node-target.satellite{width:clamp(60px,5.6vw,84px);height:auto;aspect-ratio:1;display:block;padding:0;transform:translate(-50%,-50%);border:0;border-radius:50%;background:transparent var(--surface) center/contain no-repeat;filter:drop-shadow(0 0 4px color-mix(in srgb,var(--accent) 29%,transparent))}
+
+  .folder .node-target.satellite.kafka{width:clamp(90px,8.4vw,126px)}
+  .folder .satellite:before{display:none}
+  .folder .satellite b{position:absolute;left:50%;top:89%;transform:translateX(-50%);padding:2px 4px;border-radius:4px;color:var(--accent);background:#091823f2;font:600 11px/1.25 system-ui}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Так выглядит моя работа изнутри</h1>
+  <p class="sub">Живая модель: слева — сайт/магазин, справа — подключённые системы. По нитям бегут запросы и ответы. Нажмите на систему, чтобы увидеть, что я для неё делал.</p>
+  <div class="kpi"><div><b id="k1">0</b><span>событий обработано</span></div><div><b id="k2">0</b><span>в секунду</span></div><div><b>99.98%</b><span>аптайм (пример)</span></div><div><b id="k3">0</b><span>активных систем</span></div></div>
+  <aside class="map-intro" aria-label="О карте интеграций">
+    <p>Эта карта — «сборная солянка» моих разработок из разных проектов. Связи здесь условные. Для наглядности я добавил элементы инфраструктуры, с которыми работал.</p>
+    <p><strong>Участвовал в разработке интеграций.</strong> Одни модули я писал с нуля, другие дорабатывал или переделывал после коллег. В некоторых менял лишь отдельные методы или обновлял логику, когда поставщик сервиса менял API.</p>
+  </aside>
+  <div id="roles" role="group" aria-label="Моя роль в разработке"></div>
+  <div class="ctl" id="chips" role="group" aria-label="Категории интеграций"></div><output id="category-status" role="status"></output>
+  <div class="ctl"><label>Нагрузка <input type="range" id="load" min="1" max="12" value="4"></label><button class="btn" id="pause">⏸ Пауза</button></div>
+  <nav class="views" id="views" aria-label="Вид интеграций"><button id="to-categories">Категории ↑</button><button data-view="map">Схема</button><button data-view="service">Сервис</button></nav>
+  <div class="grid">
+    <div class="cv"><canvas id="cv"></canvas></div>
+    <div class="side"><div class="log" id="log"><h4>Журнал событий</h4></div><div class="det" id="det"></div></div>
+  </div>
+  <h2>Релизы · опыт</h2><div id="deps"></div>
+  <h2>Сертификаты · образование</h2><div class="cert" id="cert"></div>
+  <h2>Контакты</h2><p id="ct"></p>
+</div>
+<script src="data.js"></script>
+<script src="project-integrations.js"></script>
+<script>
+const S = folderView ? {...window.SITE,...projectCatalog} : window.SITE, P = S.person, $ = id => document.getElementById(id);
+const C = {crm:'--crm',pay:'--pay',erp:'--erp',ship:'--ship',mp:'--mp',msg:'--msg',tel:'--tel',an:'--an'};
+const roles = integrationRoles;
+const css = getComputedStyle(document.documentElement), colOf = k => css.getPropertyValue(C[k]).trim();
+
+const MSG = {
+  crm: n => `лид #${n} → сделка создана`, pay: n => `платёж #${n} · ${(1000 + Math.floor(Math.random() * 9000)).toLocaleString('ru-RU')} ₽ подтверждён`,
+  erp: n => `заказ #${n} выгружен в учёт`, ship: n => `накладная #${n} создана`, mp: () => `остатки обновлены (${20 + Math.floor(Math.random() * 300)} SKU)`,
+  msg: n => `уведомление клиенту #${n} доставлено`, tel: () => `звонок привязан к сделке`, an: n => `purchase #${n} → отчёт`
+};
+let active = Object.fromEntries(Object.keys(S.categories).map(k => [k, true]));
+$('chips').innerHTML = Object.entries(S.categories).map(([k, v]) => `<button class="chip" aria-pressed="true" data-c="${k}">${folderView?'':`<i style="background:${colOf(k)}"></i>`}${v}</button>`).join('');
+let categoryTimer;
+const scrollBehavior = () => matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
+$('chips').onclick = e => {
+  const button = e.target.closest('.chip');
+  if (!button) return;
+  const cat = button.dataset.c;
+  active[cat] = !active[cat];
+  button.classList.toggle('off', !active[cat]);
+  button.setAttribute('aria-pressed', String(active[cat]));
+  if (!folderView) {
+    $('k3').textContent = nodes.filter(n => active[n.it.cat]).length;
+    return;
+  }
+  setView('map');
+  const group = nodes.filter(n => n.it.cat === cat).sort((a,b) => a.y-b.y);
+  if (!group.length) return;
+  const target = group[Math.floor((group.length-1)/2)].button;
+  for (const n of allNodes) n.button.classList.toggle('group-highlight', nodes.includes(n) && n.it.cat === cat);
+  const rect = target.getBoundingClientRect();
+  window.scrollTo({top:scrollY + rect.top + rect.height/2 - innerHeight/2, behavior:scrollBehavior()});
+  $('category-status').textContent = S.categories[cat] + (active[cat] ? ' · включено' : ' · выключено');
+  clearTimeout(categoryTimer);
+  categoryTimer = setTimeout(() => {
+    $('category-status').textContent = '';
+    for (const n of group) n.button.classList.remove('group-highlight');
+  },2300);
+};
+
+const cv = $('cv'), g = cv.getContext('2d'); let W, H, dpr = devicePixelRatio || 1, hub;
+const allNodes = S.integrations.map(it => ({ it, color: folderView ? '' : colOf(it.cat), pulse: 0, count: 0, x: 0, y: 0 }));
+let nodes = allNodes;
+const field = cv.parentElement;
+const phone = matchMedia('(max-width:679px)');
+const tablet = matchMedia('(max-width:1100px)');
+function keyForSize() {
+  const base = 'portfolio.project-integrations.positions.stars.v5';
+  return phone.matches ? base+'.phone' : tablet.matches ? base+'.tablet' : base;
+}
+function setView(name) {
+  document.documentElement.dataset.view = name;
+  for (const b of $('views').querySelectorAll('[data-view]')) b.setAttribute('aria-pressed',String(b.dataset.view===name));
+}
+function markNodeRole(node, filter) {
+  const {solo, team} = node.it.contributions;
+  node.role = filter || (solo && team ? 'both' : solo ? 'solo' : 'team');
+  node.color = roles[node.role === 'both' ? 'solo' : node.role].color;
+  node.button.dataset.role = node.role;
+  node.button.style.setProperty('--node-color', node.color);
+}
+const linkGreen = '#53d992';
+function roleMark(key) {
+  return `<i aria-hidden="true" class="role-mark ${key}" style="--role:${roles[key].color}"></i>`;
+}
+let positionKey;
+let positions = {};
+if (folderView) {
+  setView('map');
+  document.querySelector('.kpi').remove();
+  $('log').remove();
+  field.style.setProperty('--team-color', roles.team.color);
+  $('pause').closest('.ctl').remove();
+  $('roles').innerHTML = '<button class="role-choice" aria-pressed="true" data-role="">Все</button>' +
+    Object.entries(roles).map(([key,role])=>`<button class="role-choice" data-role="${key}" aria-pressed="false">${roleMark(key)}${role.label} · ${allNodes.filter(n=>n.it.contributions[key]).length}</button>`).join('');
+  $('roles').onclick=e=>{
+    const button=e.target.closest('[data-role]'); if (!button) return;
+    const role=button.dataset.role;
+    for(const b of $('roles').children) b.setAttribute('aria-pressed',String(b===button));
+    nodes=role ? allNodes.filter(n=>n.it.contributions[role]) : allNodes;
+    for(const n of allNodes){
+      n.button.hidden=!nodes.includes(n);
+      markNodeRole(n, role);
+    }
+    for(const chip of $('chips').children) chip.hidden=!nodes.some(n=>n.it.cat===chip.dataset.c);
+    packets.length=0;
+    sel=null;showDet(null);setView('map');layout();
+  };
+  $('views').onclick=e=>{const b=e.target.closest('button');if(b?.dataset.view)setView(b.dataset.view);
+    if(b?.id==='to-categories'){
+      const first=$('chips').querySelector('button:not([hidden])');
+      first?.focus({preventScroll:true});
+      $('chips').scrollIntoView({block:'start',behavior:scrollBehavior()});
+    }};
+  document.addEventListener('pointerdown', () => parent.postMessage('flow:focus','*'));
+}
+hub = {key:'@hub'};
+const cores = [
+  {key:'catalog', star:'sapphire', title:'A'},
+  {key:'orders', star:'sol', title:'B'},
+  {key:'partners', star:'ruby', title:'C'},
+  {key:'other', star:'pearl', title:'D'}
+];
+const infrastructure = {
+  redis: {title:'Redis', world:'carmine', accent:'#ff98a9', sources:[cores[3]]},
+  prometheus: {title:'Prometheus', world:'copper', accent:'#ffbb8e', sources:[cores[0]]},
+  mysql: {title:'MySQL', world:'pelagic', accent:'#81caff', sources:[cores[0]]},
+  mongo: {title:'MongoDB', world:'verdant', accent:'#8febaf', sources:[cores[1]]},
+  kafka: {title:'Kafka', world:'amethyst', accent:'#dcaaff', sources:cores},
+  clickhouse: {title:'ClickHouse', world:'auric', accent:'#ffda7a', sources:[cores[2]]},
+  rabbit: {title:'RabbitMQ', world:'ember', accent:'#ffa171', sources:[cores[3]]}
+};
+infrastructure.elastic = {title:'Elasticsearch', world:'glacier', accent:'#b4e5f1', sources:[infrastructure.rabbit]};
+infrastructure.zabbix = {title:'Zabbix', world:'cobalt', accent:'#aabdff', sources:[cores[3],infrastructure.rabbit]};
+infrastructure.grafana = {title:'Grafana', world:'honey', accent:'#ffe59e', sources:[infrastructure.prometheus]};
+const satellites = Object.values(infrastructure);
+for (const node of satellites) node.key = node === infrastructure.kafka ? 'infra-Kafka-central' : 'infra-'+node.title;
+function sourcesFor(it) {
+  if (it.cat === 'msg') return cores;
+  if (it.id === 'onec') return cores.slice(0,2);
+  if (it.id === 'cbr' || ['market','media'].includes(it.cat)) return [cores[0]];
+  if (['ship','pay'].includes(it.cat)) return [cores[1]];
+  if (['crm','lead','bank'].includes(it.cat)) return [cores[2]];
+  return [cores[3]];
+}
+if (folderView) for (const n of nodes) n.sources = sourcesFor(n.it);
+function place(nd, x, y) {
+  const pad = nd.it ? 17 : 55;
+  nd.x = Math.max(pad, Math.min(W-pad, x));
+  nd.y = Math.max(pad, Math.min(H-pad, y));
+  const b = nd.button;
+  b.style.left = nd.x+'px'; b.style.top = nd.y+'px';
+  // Flip labels at the edges so that dragging a point never clips its name.
+  const left = nd.x < W/2 ? nd.x > 85 : W-nd.x < 85;
+  b.classList.toggle('left', nd.it && left);
+  b.style.setProperty('--label-space', Math.min(W < 550 ? Math.max(54,W*.42-20) : 130,130,(left ? nd.x : W-nd.x)-20)+'px');
+}
+function placeSaved(nd,x,y) {
+  const pos = positions[nd.key];
+  place(nd, Number.isFinite(pos?.x) ? pos.x*W : x, Number.isFinite(pos?.y) ? pos.y*H : y);
+}
+// Each star has two local service banks; services linked to all stars sit in the middle.
+function layoutGroups() {
+  const wide = W >= 770;
+  const step = phone.matches ? 45 : 36;
+  const groups = cores.map(core => nodes.filter(n => n.sources[0] === core && n.sources.length !== cores.length));
+  const messages = nodes.filter(n => n.sources.length === cores.length);
+  function sector(index,x,y) {
+    placeSaved(cores[index],x,y);
+    const group = groups[index];
+    group.forEach((n,i)=>{
+      const row=Math.floor(i/2), side=i%2 ? 1 : -1;
+      const offset = Math.min(46,W*.095)+4*Math.sin(row*.6);
+      placeSaved(n,x+side*offset,y+82+row*step);
+      if (!positions[n.key]) {
+        n.button.classList.toggle('left',side<0);
+        const space=side<0 ? n.x : W-n.x;
+        n.button.style.setProperty('--label-space',Math.min(132,space-21)+'px');
+      }
+    });
+    return y+82+Math.max(0,Math.ceil(group.length/2)-1)*step;
+  }
+  const {mysql,mongo,prometheus,grafana,kafka,clickhouse,zabbix,redis,rabbit,elastic}=infrastructure;
+  const xA=wide ? W*.258 : W*.49;
+  const xB=wide ? W*.742 : W*.49;
+  const orbit=Math.min(115,W*.27);
+  const aY=wide ? 92 : 127;
+  const aEnd=sector(0,xA,aY);
+  placeSaved(mysql,xA-orbit,aY-55);
+  placeSaved(prometheus,wide ? xA+Math.max(93,W*.087) : xA+orbit,wide ? aY-48 : aY);
+  placeSaved(grafana,wide ? xA+Math.max(179,W*.175) : xA+orbit,wide ? aY-48 : aY-85);
+  const bY=wide ? aY+18 : aEnd+114;
+  const bEnd=sector(1,xB,bY);
+  placeSaved(mongo,xB+orbit,bY-53);
+
+  const middle=Math.max(aEnd,bEnd)+72;
+  const kafkaY=middle+(wide ? 80 : 63);
+  placeSaved(kafka,wide ? W*.157 : Math.max(60,W*.16),kafkaY);
+  // Match the two staggered banks around Kafka. On phones leave a dedicated left lane.
+  const slots=wide ? [[.332,10,true],[.493,0,true],[.61,-5,false],[.404,128,W<1000],[.541,128,false]]
+                   : [[.43,0,false],[.56,45,false],[.43,90,false],[.56,135,false],[.43,180,false]];
+  messages.forEach((n,i)=>{
+    const [fraction,dy,left]=slots[i] || [.5,200+(i-slots.length)*step,false];
+    placeSaved(n,W*fraction,middle+dy);
+    if (!positions[n.key]) n.button.classList.toggle('left',left);
+  });
+  const cY=middle+(wide ? 295 : 280);
+  placeSaved(clickhouse,xA-orbit,cY-10);
+  const cEnd=sector(2,xA,cY);
+  const dY=wide ? cY+19 : cEnd+182;
+  const dEnd=sector(3,xB,dY);
+  placeSaved(rabbit,xB+orbit,dY);
+  if (wide) {
+    placeSaved(zabbix,W*.891,middle+36);
+    placeSaved(redis,W*.806,dY-160);
+    placeSaved(elastic,W*.95,dY-84);
+  } else {
+    placeSaved(zabbix,xB-orbit,dY-99);
+    placeSaved(redis,xB-orbit,dY+2);
+    placeSaved(elastic,xB+orbit,dY-95);
+  }
+  field.style.setProperty('--rows-height',Math.max(cEnd,dEnd)+50+'px');
+}
+function layout() {
+  if (folderView && positionKey !== keyForSize()) {
+    positionKey = keyForSize(); positions = {};
+    try { positions = JSON.parse(localStorage.getItem(positionKey)) || {}; } catch {}
+  }
+  W = cv.clientWidth; H = cv.clientHeight;
+  if (!W || !H) return;
+  cv.width = W * dpr; cv.height = H * dpr;
+  if (folderView) { layoutGroups(); return; }
+  hub.x = Math.max(70, W * .1); hub.y = H / 2; const nx = W - 120, n = nodes.length;
+  nodes.forEach((nd, i) => { const t = n === 1 ? 0 : i / (n - 1) * 2 - 1; nd.x = nx - (1 - Math.cos(t * 1.05)) * W * .09 * 1 - Math.abs(t) * 0; nd.y = H / 2 + t * (H / 2 - 34); });
+}
+if (folderView) {
+  for (const nd of [...cores,...satellites,...nodes]) {
+    const b = document.createElement('button');
+    nd.key = nd.it?.cat === 'msg' ? 'center-'+nd.it.id : nd.it?.id ?? nd.key; nd.button = b;
+    b.className = 'node-target' + (nd.star ? ' core' : nd.it ? '' : ' satellite');
+    b.title = nd.it ? nd.it.name+' · '+Object.keys(nd.it.contributions).map(key=>roles[key].label).join(' / ') : nd.title;
+    b.setAttribute('aria-label',b.title);
+    if (nd.it) {
+      const span = document.createElement('span'), name = document.createElement('b');
+      name.textContent = nd.it.name;
+      span.append(name); b.append(span);
+      const brand=document.createElement('i');
+      brand.className='brand'; brand.setAttribute('aria-hidden','true');
+      markNodeRole(nd);
+      brand.textContent=nd.it.name.slice(0,2).toUpperCase();
+      if (nd.it.icon) {
+        const img=new Image(); img.alt=''; img.draggable=false;
+        img.src=nd.it.icon; brand.replaceChildren(img);
+      }
+      b.append(brand);
+    }
+    if (nd === infrastructure.kafka) b.classList.add('kafka');
+    if (nd.world) {
+      b.style.setProperty('--surface',`url("desktop-assets/planet-${nd.world}.webp")`);
+      b.style.setProperty('--accent',nd.accent);
+      const caption = document.createElement('b');
+      caption.textContent = nd.title;
+      b.append(caption);
+    }
+    if (nd.star) {
+      b.style.setProperty('--star',`url("desktop-assets/star-${nd.star}.webp")`);
+      const letter = document.createElement('b');
+      letter.textContent = nd.title;
+      b.append(letter);
+    }
+    field.append(b);
+    let drag, suppress = false;
+    b.onpointerdown = e => {
+      if (e.button || !e.isPrimary) return;
+      suppress=false; drag={x:e.clientX,y:e.clientY,ox:nd.x,oy:nd.y,id:e.pointerId};
+      b.setPointerCapture(e.pointerId);
+    };
+    b.onpointermove = e => {
+      if (e.pointerId !== drag?.id) return;
+      const dx=e.clientX-drag.x, dy=e.clientY-drag.y;
+      if (!suppress && Math.hypot(dx,dy)<5) return;
+      suppress=true; b.classList.add('dragging'); place(nd,drag.ox+dx,drag.oy+dy);
+    };
+    b.onpointerup = e => {
+      if (e.pointerId !== drag?.id) return;
+      if (suppress) {
+        positions[nd.key]={x:nd.x/W,y:nd.y/H};
+        try {localStorage.setItem(positionKey,JSON.stringify(positions));} catch {}
+      }
+      drag=null; b.classList.remove('dragging');
+    };
+    b.onlostpointercapture = () => {
+      if (drag) { place(nd,drag.ox,drag.oy); drag=null; b.classList.remove('dragging'); }
+    };
+    b.onclick = e => {
+      if (!suppress || !e.detail) {
+        sel=nd.star ? null : nd; showDet(sel);
+        if (sel && phone.matches) {
+          setView('service');
+          $('views').querySelector('[data-view=service]').focus({preventScroll:true});
+          $('views').scrollIntoView({block:'nearest'});
+        }
+      }
+      suppress=false;
+    };
+  }
+}
+new ResizeObserver(layout).observe(field); layout(); if (!folderView) $('k3').textContent = nodes.length;
+const bez = (p0, p1, p2, p3, t) => { const u = 1 - t; return u*u*u*p0 + 3*u*u*t*p1 + 3*u*t*t*p2 + t*t*t*p3; };
+function pt(nd,t,source) {
+  const dx = nd.x-source.x;
+  if (!folderView) {
+    return [bez(source.x,source.x+dx*.55,nd.x-dx*.3,nd.x,t),bez(source.y,source.y,nd.y,nd.y,t)];
+  }
+  if (nd.it && nd.sources.length === cores.length) {
+    // Each curve starts at this service. Opposite bends keep even vertically
+    // aligned destinations distinguishable on the single-column phone map.
+    const targetIndex = cores.indexOf(source);
+    const dy = source.y-nd.y;
+    const length = Math.hypot(dx,dy) || 1;
+    const bend = Math.min(W*.16,length*.24,84) * (targetIndex%2 ? 1 : -1);
+    const arc = 4*t*(1-t)*bend/length;
+    return [nd.x-dx*t-dy*arc, nd.y+dy*t-dx*arc];
+  }
+  return [bez(source.x,source.x,source.x+dx*.22,nd.x,t),bez(source.y,source.y+(nd.y-source.y)*.55,nd.y,nd.y,t)];
+}
+
+const packets = []; let total = 0, secCount = 0, paused = false, sel = null, ev = 1000, last = 0, acc = 0;
+function spawn() {
+  const pool = nodes.filter(n => active[n.it.cat]); if (!pool.length) return;
+  const nd = (sel?.it && Math.random() < .45 && active[sel.it.cat]) ? sel : pool[Math.floor(Math.random() * pool.length)];
+  const source = folderView ? nd.sources[Math.floor(Math.random()*nd.sources.length)] : hub;
+  packets.push({ nd, source, t: 0, dir: 1, v: .008 + Math.random() * .007, color: nd.color });
+}
+function arrive(p) {
+  p.nd.pulse = 1;
+  if (folderView) return;
+  p.nd.count++; total++; secCount++; ev++;
+  const d = new Date(), ts = d.toLocaleTimeString('ru-RU');
+  const message = folderView ? `ответ на запрос #${ev}` : MSG[p.nd.it.cat](ev);
+  const el = document.createElement('div'); el.innerHTML = `<span class="t">${ts}</span> <span style="color:${p.nd.color}">${p.nd.it.name}</span> ${message} <span class="ok">✔ ${20 + Math.floor(Math.random() * 180)}мс</span>`;
+  const log = $('log'); log.insertBefore(el, log.children[1]); while (log.children.length > 18) log.lastChild.remove();
+}
+if (!folderView) setInterval(() => { $('k2').textContent = secCount; secCount = 0; }, 1000);
+function draw(ts) {
+  const dt = Math.min(50, ts - last); last = ts;
+  if (!paused) { acc += dt * (folderView ? 4 : +$('load').value) / 1000; while (acc >= 1) { spawn(); acc -= 1; }
+    packets.forEach(p => { p.t += p.dir * p.v * dt / 16; if (p.dir === 1 && p.t >= 1) { p.t = 1; p.dir = -1; arrive(p); p.color = '#ffffff'; } if (p.dir === -1 && p.t <= 0) p.dead = true; });
+    for (let i = packets.length - 1; i >= 0; i--) if (packets[i].dead) packets.splice(i, 1); }
+  g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+  // нити
+  const linkedNodes = folderView ? nodes.concat(satellites) : nodes;
+  linkedNodes.forEach(nd => { const on = !nd.it || active[nd.it.cat], isSel = nd === sel;
+    for (const source of nd.sources || [hub]) {
+    g.beginPath();
+    for (let i = 0; i <= 30; i++) { const [x, y] = pt(nd, i / 30, source); i ? g.lineTo(x, y) : g.moveTo(x, y); }
+    g.strokeStyle = nd.it ? nd.color : linkGreen;
+    if (folderView) {
+      g.globalAlpha = on ? (isSel || source===sel ? 1 : sel ? .14 : !nd.it ? .78 : nd.sources.length > 1 ? .38 : .46) : .06;
+      g.lineWidth = isSel ? 3.5 : 2;
+      if (nd.role === 'team') g.setLineDash([8, 5]);
+      g.stroke();
+      if (nd.role === 'both') {
+        g.setLineDash([8, 7]); g.strokeStyle = roles.team.color; g.stroke();
+      }
+      if (!nd.it) {
+        const phase = (ts/3000 + satellites.indexOf(nd)*.17) % 1;
+        const [x,y] = pt(nd,phase,source);
+        g.fillStyle = '#c1ffda'; g.beginPath(); g.arc(x,y,2.4,0,7); g.fill();
+      }
+      if (nd.role !== 'solo') g.setLineDash([]);
+    } else {
+      g.globalAlpha = on ? (isSel ? .8 : .18) : .04; g.lineWidth = isSel ? 2.4 : 1.2; g.stroke();
+    }
+    }
+  });
+  g.globalAlpha = 1;
+  // пакеты
+  packets.forEach(p => { const [x, y] = pt(p.nd, p.t, p.source); g.shadowColor = p.color; g.shadowBlur = 14; g.fillStyle = p.color; g.beginPath(); g.arc(x, y, 3.4, 0, 7); g.fill();
+    for (let k = 1; k < 6; k++) { const [tx, ty] = pt(p.nd, Math.max(0, Math.min(1, p.t - p.dir * k * .012)), p.source); g.globalAlpha = .35 - k * .06; g.beginPath(); g.arc(tx, ty, 3 - k * .4, 0, 7); g.fill(); } g.globalAlpha = 1; g.shadowBlur = 0; });
+  // узел-источник
+  if (!folderView) {
+  const pulseR = 40 + Math.sin(ts / 500) * 3; g.fillStyle = '#47e3b022'; g.beginPath(); g.arc(hub.x, hub.y, pulseR + 16, 0, 7); g.fill();
+  g.fillStyle = '#0c1a1a'; g.strokeStyle = '#47e3b0'; g.lineWidth = 2.5; g.beginPath(); g.arc(hub.x, hub.y, 38, 0, 7); g.fill(); g.stroke();
+  g.fillStyle = '#e6ecf8'; g.font = '700 13px system-ui'; g.textAlign = 'center'; g.fillText(folderView ? 'API' : 'САЙТ', hub.x, hub.y - 2); g.font = '11px system-ui'; g.fillStyle = '#7686a6'; g.fillText(folderView ? 'проекты' : 'магазин', hub.x, hub.y + 13);
+  }
+  // системы
+  nodes.forEach(nd => { const on = active[nd.it.cat]; nd.pulse *= .92; const r = 9 + nd.pulse * 7;
+    g.globalAlpha = on ? 1 : .22; g.shadowColor = nd.color; g.shadowBlur = 6 + nd.pulse * 24; g.fillStyle = nd.color; g.strokeStyle = nd === sel ? '#fff' : '#060a12'; g.lineWidth = nd === sel ? 3 : 2;
+    g.beginPath(); g.arc(nd.x, nd.y, r, 0, 7); g.fill(); g.stroke(); g.shadowBlur = 0;
+    if (folderView) { nd.button.style.opacity=on ? 1 : .35; g.globalAlpha=1; return; }
+    g.fillStyle = '#e6ecf8'; g.font = '600 12px system-ui'; g.textAlign = 'left'; g.fillText(nd.it.name.split(/[ :+]/)[0], nd.x + 18, nd.y - 1);
+    g.fillStyle = '#7686a6'; g.font = '11px "Courier New",monospace'; g.fillText(nd.count + ' соб.', nd.x + 18, nd.y + 12); g.globalAlpha = 1; });
+  if (!folderView) $('k1').textContent = total.toLocaleString('ru-RU');
+  requestAnimationFrame(draw);
+}
+requestAnimationFrame(draw);
+cv.addEventListener('click', e => { const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+  if (folderView) { sel=null; showDet(null); return; }
+  const nd = nodes.find(n => Math.hypot(n.x - x, n.y - y) < 20 || (x > n.x && x < n.x + 100 && Math.abs(y - n.y) < 14)); sel = nd || null; showDet(sel); });
+if (!folderView) $('pause').onclick = () => { paused = !paused; $('pause').textContent = paused ? '▶ Старт' : '⏸ Пауза'; };
+function showDet(nd) {
+  if (folderView) {
+    field.parentElement.classList.toggle('has-selection',Boolean(nd));
+    if (nd && !nd.it) {
+      const incoming = nd.sources.map(source=>source.title+' → '+nd.title);
+      const outgoing = satellites.filter(target=>target.sources.includes(nd)).map(target=>nd.title+' → '+target.title);
+      $('det').innerHTML = `<div class="k">Инфраструктура</div><h3>${nd.title}</h3><p>${incoming.concat(outgoing).join('<br>')}</p>`;
+      return;
+    }
+    $('det').innerHTML=nd
+      ? `<div class="k">${S.categories[nd.it.cat]} · ${nd.sources.map(core=>core.title).join(' / ')}</div><h3>${nd.it.name}</h3>` +
+        Object.entries(nd.it.contributions).map(([key,task])=>`<div class="contribution">${roleMark(key)}${roles[key].label}</div><p>${task}</p>`).join('')
+      : '<h3>Реализованные интеграции</h3><p>В проектах ReadyScript я создавал интеграции, продолжал начатую коллегами работу, обновлял методы API и исправлял ошибки.</p><p>Выберите сервис, чтобы увидеть задачу и мою роль.</p>';
+    return;
+  }
+  if (!nd) { $('det').innerHTML = `<div class="k">Выберите систему</div><h3>${P.name}</h3><p>${P.tagline}</p>`; return; }
+  const i = nd.it; $('det').innerHTML = `<div class="k" style="color:${nd.color}">${S.categories[i.cat]} · ${i.year}</div><h3>${i.name}</h3><p style="margin:4px 0">${i.task}</p>
+    <ul>${i.done.map(d => `<li>${d}</li>`).join('')}</ul><div>${i.stack.map(s => `<span class="tag">${s}</span>`).join('')}</div><div style="color:var(--ac);margin-top:4px">📈 ${i.result}</div>`; }
+showDet(null);
+$('deps').innerHTML = S.jobs.map((j, k) => `<div class="dep"><div><div class="v">v${S.jobs.length - k}.0</div><div class="d">${j.from} — ${j.to}</div></div><div><b>${j.role}</b> · ${j.company}<div class="d">${j.summary}</div><ul>${j.stages.map(s => `<li class="${s.hl ? 'hl' : ''}">${s.t} <span class="d">— ${s.d}</span></li>`).join('')}</ul></div></div>`).join('');
+$('cert').innerHTML = S.education.map(e => `<div><small style="color:var(--dim)">${e.years} · ${e.degree}</small><br><b>${e.title}</b><br>${e.school}</div>`).join('');
+$('ct').textContent = `${P.email} · ${P.telegram} · ${P.github}`;
+</script>
+</body>
+</html>

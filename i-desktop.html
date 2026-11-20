@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>I · Рабочий стол — демо</title>
+<style>
+  :root{--tx:#172835;--dim:#526475;--line:#d3dde5;--ac:#1269aa;--crm:#ae4418;--pay:#187856;--erp:#85620d;--ship:#1866a4;--mp:#8050ac;--msg:#147888;--tel:#b63f7d;--an:#52751d;--bar:54px}
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;overflow:hidden}
+  body,button,input{font:14px/1.45 "Segoe UI",system-ui,sans-serif;color:var(--tx)}
+  button{border:0;background:none;cursor:pointer}button:focus-visible,a:focus-visible{outline:2px solid #0075c4;outline-offset:-2px}
+  body{background:#507a9e url("desktop-assets/bliss.png") center/cover no-repeat;user-select:none}
+  .icons{position:absolute;inset:12px 8px calc(var(--bar) + 6px);display:grid;grid-auto-flow:column;grid-template-rows:repeat(auto-fill,84px);grid-auto-columns:96px;align-content:start;justify-content:start;overflow:auto}
+  .ico{display:flex;align-items:center;justify-content:flex-start;flex-direction:column;gap:4px;width:94px;height:82px;padding:5px 2px;color:#fff;text-shadow:0 1px 3px #08192e,0 0 4px #08192e;font-size:12px;line-height:1.2;border:1px solid transparent;border-radius:3px}
+  .ico:hover,.ico:focus-visible{background:#e9f5ff2e;border-color:#f3f8ff73}
+  .icons{isolation:isolate}
+  .ico{touch-action:none;position:relative}
+  .ico.dragging{cursor:grabbing;background:#e9f5ff40;border-color:#fff9}
+  .art{display:inline-grid;position:relative;place-items:center;width:var(--size,40px);height:var(--size,40px);flex:none;vertical-align:middle}
+  .art img{width:100%;height:100%;object-fit:contain}.ico .shortcut:after{content:'↗';position:absolute;bottom:0;left:0;width:11px;height:11px;background:#fff;color:#196aa7;text-shadow:none;line-height:11px;font:bold 11px Arial;border-radius:1px}
+  .art.folder{filter:drop-shadow(1px 2px 1px #53380070)}
+  .folder:before,.folder:after{content:'';position:absolute}
+  .folder:before{inset:10% 9% 18% 8%;background:linear-gradient(135deg,#fff0a4,#dea139 55%,#ae6920);clip-path:polygon(0 6%,5% 0,39% 0,49% 15%,95% 15%,100% 22%,100% 100%,0 100%)}
+  .folder:after{inset:34% 6% 14% 10%;border:1px solid #bf831e;border-top-color:#fff2bb;border-radius:2px 4px 4px 3px;background:linear-gradient(156deg,#fff0a2 1%,#ffd566 44%,#ecae39 94%);box-shadow:inset 1px 1px #fff0ae;transform:skewX(-10deg) rotate(-4deg)}
+  .folder i{position:absolute;z-index:1;right:10%;bottom:13%;background:var(--folder);border:1px solid #ffffffb3;border-radius:3px;padding:1px 2px;color:#142b40;font:bold calc(var(--size,40px)*.24)/1 Tahoma,sans-serif}
+  .win{position:absolute;display:flex;flex-direction:column;min-width:min(320px,100vw);min-height:180px;border:1px solid #8aa2b7;border-radius:7px;overflow:hidden;resize:both;background:#fbfdff;box-shadow:0 12px 42px #071b3650;animation:show .16s ease-out}
+  @keyframes show{from{opacity:0;transform:translateY(8px) scale(.985)}}.win.active{box-shadow:0 16px 48px #102f4e65}.win.min{display:none}.win.max{inset:0 0 var(--bar)!important;width:auto!important;height:auto!important;border-radius:0;resize:none}
+  .tb{height:38px;display:flex;align-items:center;padding-left:12px;gap:0;background:#e4edf4;border-bottom:1px solid var(--line);touch-action:none;flex:none}
+  .tb .art{--size:19px;margin-right:8px}.tb .t{margin-right:auto;font-size:12px}.tb button{width:44px;height:100%;font-size:17px}.tb button:hover{background:#cbdbe6}.tb .c:hover{background:#c73539;color:white}
+  .body{flex:1;overflow:auto;user-select:text;min-height:0}.smile{height:100%;display:grid;place-items:center;font-size:68px;background:#f8fbff}
+  .split{display:grid;grid-template-columns:140px minmax(145px,.85fr) 1.15fr;height:100%}.split>div{padding:12px;overflow:auto;border-right:1px solid var(--line)}.split>div:last-child{border:0;padding:20px}
+  .side,.list{background:#f0f5f9}.list{background:#f7fafb}.side button,.list button{display:block;width:100%;padding:7px 9px;text-align:left;border-radius:4px}.side button:hover,.list button:hover,.menu button:hover{background:#deeaf2}.side button.on,.list button.on{background:#d5eafa;box-shadow:inset 3px 0 #1682c3}
+  .side i{display:inline-block;width:8px;height:8px;margin-right:7px;border-radius:50%}.list small,.dim,.k{color:var(--dim)}.list small{display:block}
+  .det h3,.pad h2{margin:0}.det ul{padding-left:19px}.tag{display:inline-block;padding:2px 7px;margin:0 4px 4px 0;font-size:12px;border:1px solid var(--line);border-radius:3px}.res{background:#eaf4ed;padding:8px}.hl{color:#196246}.pad{padding:22px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px;padding:16px}.cards>div{border-left:3px solid #6aaad0;padding:10px;background:#f2f6fa}
+  .bar{position:fixed;z-index:9999;inset:auto 0 0;height:var(--bar);display:grid;grid-template-columns:minmax(36px,1fr) auto minmax(140px,1fr);align-items:center;padding:0 10px;background:#edf5f9ed;backdrop-filter:blur(20px);border-top:1px solid #fff9}
+  .dock,#tasks,.tray{display:flex;align-items:center;gap:3px;min-width:0}.dock{max-width:62vw}.dock button,.deskbtn{height:40px;min-width:40px;border-radius:4px;position:relative;display:grid;place-items:center;padding:6px}
+  .dock button:hover,.dock button.on,.deskbtn:hover{background:#fff}.dock .art{--size:25px}.dock .running:after{content:'';position:absolute;width:6px;height:3px;bottom:1px;background:#8f9da5;border-radius:3px}.dock .on:after{width:16px;background:#147cb8}
+  #tasks{overflow-x:auto;scrollbar-width:none}#tasks::-webkit-scrollbar{display:none}
+  .searchglyph{width:16px;height:16px;border:1.8px solid currentColor;border-radius:50%;position:relative}.searchglyph:after{content:'';position:absolute;width:8px;height:2px;background:currentColor;top:13px;left:11px;transform:rotate(45deg)}
+  .tray{justify-self:end;gap:12px;font-size:11px}.clock{text-align:right;line-height:1.35;font-variant-numeric:tabular-nums}.deskbtn{border-left:1px solid #a7b7c2;border-radius:0;min-width:9px;padding:0;height:34px}
+  .menu{display:none;position:fixed;bottom:calc(var(--bar) + 7px);left:50%;transform:translateX(-50%);width:min(460px,96vw);max-height:70dvh;overflow:auto;z-index:9999;padding:18px;background:#eef5faf7;border:1px solid #ffffffab;border-radius:8px;box-shadow:0 10px 45px #10283c55}.menu.on{display:block}.menu input{width:100%;padding:9px 12px;border:1px solid #bcccd8;border-bottom:2px solid #267db6;border-radius:4px}.menu h2{font-size:14px;margin:16px 4px 8px}.menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.menu-grid button{padding:7px;border-radius:5px;font-size:12px}.menu-grid .art{--size:25px;display:grid;margin:auto auto 3px}
+  @media(max-width:760px){.win{inset:0 0 var(--bar)!important;width:auto!important;height:auto!important;border-radius:0;resize:none}.split{height:auto;grid-template-columns:1fr!important}.split>div{overflow:visible;border:0;border-bottom:1px solid var(--line)}.side{display:flex;overflow:auto!important}.side button{width:auto;white-space:nowrap}.icons{grid-auto-flow:row;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));grid-auto-columns:auto;grid-template-rows:none;grid-auto-rows:83px}.ico{width:100%}.bar{grid-template-columns:auto minmax(0,1fr) auto;gap:4px;padding:0 5px}.dock{max-width:none;overflow:hidden}.dock button{min-width:33px}.tray{gap:4px}.tray .status{display:none}.dock .art{--size:22px}}
+  @media(min-width:850px) and (min-height:650px){
+    .icons{grid-template-rows:repeat(6,84px);grid-auto-columns:104px}
+    .ico:nth-child(-n+5){grid-column:1}
+    .ico[data-id=chrome]{grid-area:6/3}.ico[data-id=firefox]{grid-area:6/4}
+    .ico[data-id=docker]{grid-area:4/3}.ico[data-id=phpstorm]{grid-area:4/4}
+    .ico[data-id=mongo]{grid-area:2/5}.ico[data-id=heidi]{grid-area:3/5}
+    .ico[data-id=notepad]{grid-area:3/3}.ico[data-id=sourcetree]{grid-area:4/2}
+    .ico[data-id=telegram]{grid-area:5/4}.ico[data-id=flclash]{grid-area:1/4}
+    .ico[data-id=pritunl]{grid-area:1/2}.ico[data-id=radmin]{grid-area:1/3}
+    .ico[data-id=happ]{grid-area:2/3}
+    .ico[data-id=webstorm]{grid-area:4/5}.ico[data-id=vscode]{grid-area:5/5}
+    .ico[data-id=cursor]{grid-area:5/6}.ico[data-id=openserver]{grid-area:3/4}
+    .ico[data-id=postman]{grid-area:4/6}.ico[data-id=dbeaver]{grid-area:3/6}
+    .ico[data-id=ck2]{grid-area:6/6}
+  }
+  @media(prefers-reduced-motion:reduce){.win{animation:none}}
+  .flow-app{display:block;border:0;width:100%;height:100%;background:#060a12}
+  .ico[data-id=integ]>span:last-child{font-size:11px;line-height:1.12}
+  @media(max-width:1100px){
+    .win.integration-window{inset:0 0 var(--bar)!important;width:auto!important;height:auto!important;border-radius:0;resize:none}
+    .integration-window .tb{height:44px;touch-action:auto}
+    .integration-window .tb .x{display:none}
+    .integration-window .tb .t{min-width:0;line-height:1.15}
+  }
+  @media(min-width:761px) and (max-width:1100px){
+    .icons{grid-template-rows:repeat(auto-fill,92px);grid-auto-columns:102px}
+    .dock button,.tb button{min-width:44px}
+  }
+  @media(max-width:760px){
+    .bar{padding-bottom:env(safe-area-inset-bottom);height:var(--bar)}
+    :root{--bar:calc(50px + env(safe-area-inset-bottom))}
+    .tb .x{display:none}.tb{height:44px}
+    .deskbtn{min-width:18px}
+  }
+  #boot{position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;background:#050609;color:#e9edf3;font:14px Tahoma,"MS Sans Serif",sans-serif}
+  #boot[open]{display:grid;place-content:center;justify-items:center}
+  .boot-monitor{width:64px;height:48px;position:relative;background:#101e48;border:6px ridge #c2c8cf;box-shadow:4px 4px #262933}
+  .boot-monitor::before{content:"";position:absolute;left:8px;top:7px;width:5px;height:5px;background:#8ce7ff;box-shadow:5px 5px #8ce7ff,0 10px #8ce7ff,15px 10px #8ce7ff,20px 10px #8ce7ff}
+  .boot-monitor::after{content:"";position:absolute;top:42px;left:17px;width:18px;height:5px;background:#939ba7;box-shadow:-7px 5px #bfc5ce,7px 5px #bfc5ce}
+  .boot-name{margin:28px 0 4px;font:bold clamp(24px,6vw,34px)/1.15 Tahoma,sans-serif;letter-spacing:-1px}
+  .boot-caption{color:#a8adb9}
+  .boot-track{position:relative;overflow:hidden;margin-top:24px;width:176px;height:17px;border:2px ridge #a5a9b4;background:#090d16}
+  .boot-blocks{position:absolute;top:2px;bottom:2px;left:-34px;width:32px;background:repeating-linear-gradient(90deg,transparent 0 8px,#090d16 8px 11px),linear-gradient(#a2c3ff,#386bd1 45%,#21469e);animation:boot-travel 1.15s steps(19,end) infinite}
+  @keyframes boot-travel{to{transform:translateX(209px)}}
+  .profile{padding:clamp(16px,4vw,30px);line-height:1.55;user-select:text}
+  .profile-head{display:flex;gap:18px;align-items:center;padding-bottom:18px;border-bottom:1px solid var(--line)}
+  .profile-head img{border-radius:8px;object-fit:cover}.profile-head h2{margin:0;font-size:clamp(21px,3vw,28px)}
+  .profile h3{margin:20px 0 6px;font-size:17px}.profile p{margin:5px 0 10px}.profile-head p{margin:2px 0;color:var(--dim)}
+  .profile dl{display:grid;grid-template-columns:minmax(135px,1fr) 3fr;gap:7px 16px;margin:0}
+  .profile dt{color:var(--dim)}.profile dd{margin:0}
+  .profile-links{display:flex;flex-wrap:wrap;gap:8px 18px}.profile-links a{color:#125a8d;text-underline-offset:3px}
+  @media(max-width:480px){.profile-head{gap:12px}.profile-head img{width:78px;height:78px}.profile dl{grid-template-columns:1fr;gap:0}.profile dd{margin-bottom:8px}}
+  .bar{grid-template-columns:auto minmax(0,1fr) auto;gap:8px;padding-left:0}
+  .bar .dock{justify-self:start;min-width:0;max-width:100%}
+  #start{height:38px;display:inline-flex;align-items:center;gap:8px;padding:0 21px 1px 12px;border:1px solid #276828;border-left:0;border-radius:0 15px 19px 0;background:radial-gradient(ellipse at 42% 0%,#b3e69499,transparent 65%),linear-gradient(#80c86a 0%,#53a942 13%,#368b32 43%,#33852e 68%,#297027 91%,#215a27);box-shadow:inset 0 1px 1px #d5f2ae,inset -3px 0 4px #29632d,0 1px 2px #17354770;color:white;font:italic bold 22px/1 "Trebuchet MS",Tahoma,sans-serif;text-shadow:1px 2px 2px #204c24}
+  #start:hover{filter:brightness(1.1)}
+  #start:active,#start[aria-expanded=true]{background:linear-gradient(#28662a,#388e32 70%,#4a9d3b);box-shadow:inset 2px 2px 4px #174b24}
+  #start:focus-visible{outline:2px solid #174b7d;outline-offset:1px}
+  .startmark{width:22px;height:21px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:1px 2px;transform:skew(-11deg) rotate(-5deg);filter:drop-shadow(1px 1px 1px #214923)}
+  .startmark i{background:linear-gradient(130deg,#ffc083,#ed643d);border-radius:50% 12% 5% 0}
+  .startmark i:nth-child(2){background:linear-gradient(130deg,#c7ee87,#72ae44);transform:translateY(2px);border-radius:0 0 40% 8%}
+  .startmark i:nth-child(3){background:linear-gradient(130deg,#85d7fa,#3789d2)}
+  .startmark i:nth-child(4){background:linear-gradient(130deg,#ffed86,#e8ab30);transform:translateY(2px);border-radius:0 0 40% 8%}
+  .menu{left:4px;bottom:var(--bar);transform:none;border:2px solid #345f9e;border-top:8px solid #5387bf;background:#f5f2e9;border-radius:7px 7px 0 0}
+  @media(max-width:760px){.bar{gap:4px}#start{min-height:42px;padding:0 13px 1px 9px;font-size:19px}}
+  .education-list{display:grid;gap:12px;padding:clamp(12px,3vw,24px);background:#edf2f5;font-family:"Segoe UI",sans-serif}
+  .study{padding:16px clamp(12px,3vw,20px);background:#fff;border:1px solid #cfdae2;border-radius:8px;box-shadow:0 2px 6px #1a334710}
+  .study header{display:flex;align-items:center;gap:16px}.school-mark{width:60px;height:60px;display:grid;place-items:center;flex:none;color:#32556b;font:700 14px Georgia,serif;background:#f4f7f8;border-radius:6px}
+  .school-mark img{max-width:90%;max-height:54px;object-fit:contain}
+  .study-meta{display:flex;align-items:center;flex-wrap:wrap;gap:5px 10px;color:#506878;margin:0 0 6px;font-size:13px}
+  .study-degree{display:inline-flex;align-items:center;gap:7px;padding:3px 10px;border:1px solid #d6be7c;border-radius:5px;background:#fff3cc;color:#644508;font:700 19px/1.3 "Segoe UI",sans-serif}
+  .study-degree::before{content:"";width:12px;height:16px;background:linear-gradient(#c59532 0 64%,#91632a 64%);clip-path:polygon(50% 0,85% 10%,100% 37%,86% 60%,92% 100%,52% 82%,14% 100%,19% 61%,0 37%,15% 12%)}
+  .study h3{margin:0;font:600 18px/1.25 "Segoe UI",sans-serif}
+  .study dl{display:grid;grid-template-columns:118px 1fr;gap:5px 12px;padding-top:11px;border-top:1px solid #e2e9ed;margin:13px 0 0}
+  .study dt{color:#526475}.study dd{margin:0}.study dd:last-child{font-weight:600}
+  @media(max-width:500px){.study dl{grid-template-columns:1fr;gap:1px}.study dt:not(:first-child){margin-top:6px}.study header{gap:10px}.study h3{font-size:16px}}
+  .diploma-preview{display:inline-flex;align-items:center;gap:12px;margin-top:14px;color:#125a8d;text-underline-offset:3px;font-weight:600}
+  .diploma-preview img{display:block;object-fit:contain;border:1px solid #acb8c0;border-radius:4px}
+  .diploma-preview:hover img,.diploma-preview:focus-visible img{outline:2px solid #3673a0}
+  .diploma-preview{cursor:zoom-in;padding:0}
+  #diploma-viewer{position:fixed;box-sizing:border-box;width:min(840px,90vw,110dvh);padding:0;border:1px solid #95a8bc;border-radius:10px;background:#f8fafc;color:#273749;font:13px "Segoe UI",sans-serif;box-shadow:0 14px 48px #18233155}
+  #diploma-viewer::backdrop{background:#17243555}
+  #diploma-viewer header,.paint-ribbon,.paint-foot{display:flex;align-items:center;gap:10px}
+  #diploma-viewer header{padding:5px 8px 5px 14px;background:#e4eff6;cursor:grab;touch-action:none;user-select:none}
+  #diploma-viewer header:active{cursor:grabbing}
+  #diploma-viewer header strong{flex:1;font-weight:600}
+  #diploma-viewer button{min-height:36px;padding:4px 10px;border-radius:5px;color:#243c52}
+  #diploma-viewer button:hover,#paint-zoom[aria-pressed=true]{background:#d4e4ef}
+  .paint-ribbon{padding:6px 12px;justify-content:space-between;border-bottom:1px solid #cbd7df}
+  .paint-ink{display:flex;gap:4px;align-items:center}.paint-ink i{width:13px;height:13px;border-radius:50%;background:var(--ink);border:1px solid #0002}
+  .paint-sheet{box-sizing:border-box;height:min(54dvh,57vw);overflow:auto;background:#e4e8eb;display:grid;grid-template:minmax(0,1fr)/minmax(0,1fr);padding:12px}
+  .paint-sheet img{display:block;margin:auto;width:100%;height:100%;object-fit:contain}
+  .paint-sheet.zoomed{display:block}.paint-sheet.zoomed img{width:auto;height:auto;max-width:none}
+  .paint-foot{border-top:1px solid #cbd7df;padding:5px 12px;justify-content:flex-end;color:#485e6c;font-size:12px}
+  @media(max-width:500px){#diploma-viewer button{min-height:44px}.paint-sheet{padding:6px}.paint-ribbon{gap:4px}.paint-ink{gap:2px}.paint-ink i{width:10px;height:10px}}
+</style>
+</head>
+<body>
+<dialog id="boot" aria-label="Загрузка рабочего стола">
+  <div class="boot-monitor" aria-hidden="true"></div>
+  <strong class="boot-name">Виктор Мельников</strong>
+  <span class="boot-caption">Загрузка рабочего стола</span>
+  <div class="boot-track" aria-hidden="true"><i class="boot-blocks"></i></div>
+</dialog>
+<script>
+  const startupSound = new Audio('desktop-assets/startup.wav');
+  startupSound.volume = .55;
+  function playStartup() {
+    startupSound.play().then(() => {
+      document.removeEventListener('click', playStartup, true);
+      document.removeEventListener('keydown', playStartup, true);
+    }).catch(() => {});
+  }
+  document.addEventListener('click', playStartup, true);
+  document.addEventListener('keydown', playStartup, true);
+  playStartup();
+  const bootScreen = document.getElementById('boot');
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    bootScreen.showModal();
+    setTimeout(() => bootScreen.close(), 2400);
+  }
+</script>
+
+<div class="icons" id="icons"></div>
+<div id="wins"></div>
+<dialog id="diploma-viewer" aria-labelledby="diploma-title">
+  <header><span aria-hidden="true">🎨</span><strong id="diploma-title"></strong><form method="dialog"><button autofocus>Закрыть ×</button></form></header>
+  <div class="paint-ribbon"><button type="button" id="paint-zoom" aria-pressed="false">⌕ Масштаб 100 %</button>
+    <div class="paint-ink" aria-hidden="true">🎨 <i style="--ink:#343749"></i><i style="--ink:#e86058"></i><i style="--ink:#f3ba49"></i><i style="--ink:#50ac8a"></i><i style="--ink:#4197ce"></i><i style="--ink:#916cc1"></i></div></div>
+  <div class="paint-sheet" tabindex="0" aria-label="Холст с дипломом"><img alt=""></div>
+  <footer class="paint-foot"><span id="paint-scale"></span></footer>
+</dialog>
+<div class="menu" id="menu"></div>
+<div class="bar"><button id="start" aria-label="Пуск" aria-controls="menu" aria-expanded="false" title="Пуск"><span class="startmark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Пуск</button><div class="dock"><button id="find" aria-label="Поиск приложений" title="Поиск приложений"><span class="searchglyph"></span></button><div id="tasks"></div></div><div class="tray"><span class="status">РУС</span><span class="status" aria-hidden="true" style="font:15px Segoe MDL2 Assets">&#xE701; &nbsp;&#xE767;</span><time class="clock" id="clock"></time><button class="deskbtn" id="showDesk" aria-label="Показать рабочий стол" title="Показать рабочий стол"></button></div></div>
+
+<script src="data.js"></script>
+<script src="project-integrations.js"></script>
+<script>
+const S = window.SITE, P = S.person, $ = id => document.getElementById(id);
+const APPS = {
+  about:{ t:'Обо мне', i:'👤', w:740, h:710 }, integ:{ t:'Реализованные мной интеграции', i:'🔌', w:1240, h:820 },
+  exp:{ t:'Опыт', i:'💼', w:820, h:500 }, edu:{ t:'Образование', i:'🎓', w:760, h:680 }, contact:{ t:'Контакты', i:'✉️', w:420, h:260 }
+};
+const tools = {chrome:'Google Chrome',firefox:'Firefox',docker:'Docker Desktop',phpstorm:'PhpStorm',mongo:'MongoDB Compass',heidi:'HeidiSQL',notepad:'Notepad++',sourcetree:'Sourcetree',telegram:'Telegram',flclash:'FlClashX',pritunl:'Pritunl',radmin:'Radmin VPN',happ:'Happ'};
+const webTools = {
+  webstorm: ['WebStorm', 'svg'],
+  cursor: ['Cursor', 'svg'],
+  vscode: ['Visual Studio Code', 'svg'],
+  openserver: ['Open Server Panel', 'ico'],
+  postman: ['Postman', 'svg'],
+  dbeaver: ['DBeaver', 'svg'],
+  ck2: ['Crusader Kings II', 'ico']
+};
+for (const [id, [title]] of Object.entries(webTools)) tools[id] = title;
+for (const [id,t] of Object.entries(tools)) APPS[id]={t,w:340,h:230};
+const folders = {about:['#59b8e3','●'],integ:['#edb443','⤧'],exp:['#83a9e8','▤'],edu:['#97b58a','≡'],contact:['#cb9ace','@']};
+function art(id) {
+  if (tools[id]) {
+    const format = webTools[id]?.[1] ?? 'png';
+    return `<span class="art shortcut"><img src="desktop-assets/${id}.${format}" alt="" draggable="false"></span>`;
+  }
+  const [color, mark] = folders[id];
+  return `<span aria-hidden="true" class="art folder" style="--folder:${color}"><i>${mark}</i></span>`;
+}
+let z = 10, open = {};
+
+const contactLinks = `<div class="profile-links">
+  <a href="https://t.me/melnikovusername" target="_blank" rel="noopener">Telegram · @melnikovusername</a>
+  <a href="mailto:boisik@mail.ru">boisik@mail.ru</a>
+  <a href="tel:+79781078422">+7 (978) 107-84-22</a>
+  <a href="https://set.ki/account/2xb47Z6" target="_blank" rel="noopener">Профиль в Сетке</a>
+  <a href="https://github.com/boisik" target="_blank" rel="noopener">GitHub · boisik</a>
+  <a href="https://github.com/boisikmail-droid/" target="_blank" rel="noopener">GitHub · boisikmail-droid</a>
+</div>`;
+// --- содержимое окон ---
+const render = {
+  about: () => `<article class="profile">
+    <header class="profile-head"><img src="desktop-assets/viktor-melnikov.jpg" width="104" height="104" alt="Виктор Мельников">
+      <div><h2>Виктор Мельников</h2><b>Full-stack разработчик</b><p>PHP · Symfony · Vue.js</p><p>Керчь · 10 лет в коммерческой разработке</p></div></header>
+    <section><h3>Обо мне</h3>
+      <p>В компании «Голосовые Технологии» я прошёл путь от backend-разработчика до руководителя команды. Подключал внешние сервисы, разрабатывал внутреннюю статистику, импорт и экспорт данных. Позже вместе с командой из 4–6 разработчиков создавал стартап компании на Vue.js и PostgreSQL. Ставил задачи, планировал спринты с руководством и отвечал за сроки.</p>
+      <p>Разворачиваю сервисы в Linux и настраиваю CI/CD. Мне интересны продуктовые задачи, интеграции и развитие уже работающих систем. В портфолио — ${projectCatalog.integrations.length} интеграций.</p></section>
+    <section><h3>Ключевые навыки</h3><dl>
+      <dt>Разработка</dt><dd>PHP, Symfony, MVC, REST, JavaScript, Vue.js, jQuery, AJAX</dd>
+      <dt>Базы данных</dt><dd>SQL, MySQL, PostgreSQL, MongoDB, Redis</dd>
+      <dt>Обмен сообщениями</dt><dd>Apache Kafka, RabbitMQ</dd>
+      <dt>Инфраструктура</dt><dd>Linux, Docker, Git, CI/CD</dd>
+      <dt>Работа с командой</dt><dd>Планирование спринтов, постановка задач, Jira, сопровождение клиентов</dd>
+    </dl></section>
+    <section><h3>Формат работы</h3><p>Рассматриваю полную и частичную занятость, проекты и разовые задачи. Готов работать удалённо, в офисе или в гибридном формате, к переезду и командировкам.</p></section>
+    <section><h3>Контакты и GitHub</h3><p>Предпочитаю Telegram. Готов выполнить тестовое задание.</p>${contactLinks}</section>
+    </article>`,
+  contact: () => `<div class="pad"><h2>Контакты</h2><p>Виктор Мельников · Керчь</p>${contactLinks}</div>`,
+  edu: () => `<div class="education-list">${S.education.map(e => `
+    <article class="study">
+      <header><div class="school-mark" aria-hidden="true">${e.emblem ? `<img src="${e.emblem}" alt="">` : 'ККЭИТ'}</div>
+        <div><p class="study-meta">${['Магистр','Бакалавр'].includes(e.degree) ? `<strong class="study-degree">${e.degree}</strong>` : `<span>${e.degree}</span>`} <time>${e.years}</time></p><h3>${e.school}</h3></div></header>
+      <dl><dt>${e.id === 'e3' ? 'Отделение' : 'Факультет'}</dt><dd>${e.note.replace(/\.$/,'')}</dd>
+      <dt>Специальность</dt><dd>${e.title}</dd></dl>
+      <button class="diploma-preview" type="button" data-year="${e.years}" aria-haspopup="dialog" aria-label="Открыть диплом за ${e.years} год">
+        <img src="desktop-assets/diploma-${e.years}-thumb.jpg" width="96" height="72" alt="">Открыть диплом</button>
+    </article>`).join('')}</div>`,
+  exp: (root) => {
+    root.innerHTML = `<div class="split" style="grid-template-columns:240px 1fr"><div class="list" id="jl"></div><div class="det" id="jd"></div></div>`;
+    const pick = id => { const j = S.jobs.find(x => x.id === id);
+      root.querySelectorAll('#jl button').forEach(b => b.classList.toggle('on', b.dataset.id === id));
+      root.querySelector('#jd').innerHTML = `<h3>${j.role}</h3><div class="k">${j.company} · ${j.from} — ${j.to}</div><p>${j.summary}</p>
+        <ul>${j.stages.map(s => `<li class="${s.hl ? 'hl' : ''}"><b>${s.t}</b><span class="dim"> — ${s.d}</span></li>`).join('')}</ul>`; };
+    root.querySelector('#jl').innerHTML = S.jobs.map(j => `<button data-id="${j.id}">${j.company}<small>${j.role} · ${j.from}–${j.to}</small></button>`).join('');
+    root.querySelector('#jl').onclick = e => { const b = e.target.closest('button'); if (b) pick(b.dataset.id); };
+    pick(S.jobs[0].id);
+  },
+  integ: () => '<iframe class="flow-app" title="Реализованные мной интеграции" src="integrations.html"></iframe>'
+};
+
+// --- оконный менеджер ---
+const diplomaViewer = $('diploma-viewer');
+const diplomaBar = diplomaViewer.querySelector('header');
+function placeDiploma(left, top) {
+  const bounds = diplomaViewer.getBoundingClientRect();
+  const style = diplomaViewer.style;
+  style.margin = '0';
+  style.inset = 'auto';
+  style.left = Math.max(0, Math.min(innerWidth - bounds.width, left)) + 'px';
+  style.top = Math.max(0, Math.min(innerHeight - bounds.height, top)) + 'px';
+}
+let diplomaDrag;
+diplomaBar.onpointerdown = e => {
+  if (!e.isPrimary || e.button !== 0 || e.target.closest('button')) return;
+  const r = diplomaViewer.getBoundingClientRect();
+  diplomaDrag = {id:e.pointerId, dx:e.clientX-r.left, dy:e.clientY-r.top};
+  diplomaBar.setPointerCapture(e.pointerId);
+};
+diplomaBar.onpointermove = e => {
+  if (e.pointerId === diplomaDrag?.id) placeDiploma(e.clientX-diplomaDrag.dx,e.clientY-diplomaDrag.dy);
+};
+diplomaBar.onlostpointercapture = () => { diplomaDrag = null; };
+window.addEventListener('resize', () => {
+  if (diplomaViewer.open && diplomaViewer.style.left) {
+    const r = diplomaViewer.getBoundingClientRect();
+    placeDiploma(r.left,r.top);
+  }
+});
+function setDiplomaZoom(full) {
+  const sheet = diplomaViewer.querySelector('.paint-sheet');
+  sheet.classList.toggle('zoomed',full);
+  sheet.scrollTo(0,0);
+  $('paint-zoom').setAttribute('aria-pressed',String(full));
+  $('paint-scale').textContent = full ? 'Масштаб 100 %' : 'По размеру окна';
+}
+$('paint-zoom').onclick = () => setDiplomaZoom($('paint-zoom').getAttribute('aria-pressed') !== 'true');
+$('wins').addEventListener('click', event => {
+  const preview = event.target.closest('.diploma-preview');
+  if (!preview) return;
+  const year = preview.dataset.year;
+  $('diploma-title').textContent = 'Диплом-' + year + '.jpg — Paint';
+  setDiplomaZoom(false);
+  const image = diplomaViewer.querySelector('img');
+  image.src = `desktop-assets/diploma-${year}.jpg`;
+  image.alt = 'Диплом за ' + year + ' год';
+  preview.focus({preventScroll:true});
+  diplomaViewer.removeAttribute('style');
+  diplomaViewer.showModal();
+});
+diplomaViewer.addEventListener('click', event => {
+  if (event.target !== diplomaViewer) return;
+  const r = diplomaViewer.getBoundingClientRect();
+  if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) diplomaViewer.close();
+});
+function focusWin(id) { Object.values(open).forEach(w => w.el.classList.remove('active')); const w = open[id]; if (!w) return; w.el.style.zIndex = ++z; w.el.classList.remove('min'); w.el.classList.add('active'); tasks(); }
+window.addEventListener('message', e => {
+  const frame = open.integ?.el.querySelector('.flow-app');
+  if (frame && e.source === frame.contentWindow && e.data === 'flow:focus') focusWin('integ');
+});
+function openApp(id) {
+  menuState(false);
+  if (open[id]) {
+    open[id].restartTimer?.();
+    return focusWin(id);
+  }
+  const a = APPS[id], n = Object.keys(open).length;
+  const el = document.createElement('div'); el.className = 'win';
+  if (id === 'integ') el.classList.add('integration-window');
+  if (id === 'integ') {
+    el.style.cssText = 'left:clamp(12px,4.6vw,88px);top:12px;width:calc(100% - clamp(12px,4.6vw,88px) - 10px);height:calc(100% - var(--bar) - 24px)';
+  } else el.style.cssText = `width:${Math.min(a.w, innerWidth - 20)}px;height:${Math.min(a.h, innerHeight - 70)}px;left:${Math.max(0, (innerWidth-Math.min(a.w,innerWidth-20))/2 + ((n%5)-2)*9)}px;top:${Math.max(0,(innerHeight-54-Math.min(a.h,innerHeight-70))/2 + ((n%5)-2)*4)}px`;
+  el.innerHTML = `<div class="tb">${art(id)}<span class="t">${a.t}</span><button class="m" title="Свернуть" aria-label="Свернуть">−</button><button class="x" title="Развернуть" aria-label="Развернуть">□</button><button class="c" title="Закрыть" aria-label="Закрыть">×</button></div><div class="body"></div>`;
+  $('wins').appendChild(el);
+  const body = el.querySelector('.body');
+  const content = tools[id] ? '<div class="smile" role="img" aria-label="Улыбка">🙂</div>' : render[id](body);
+  if (typeof content === 'string') body.innerHTML = content;
+  open[id] = { el };
+  const [m, x, c] = el.querySelectorAll('.tb button');
+  let closeTimer;
+  const closeWindow = () => {
+    clearTimeout(closeTimer);
+    el.remove();
+    delete open[id];
+    activateTop();
+  };
+  c.onclick = closeWindow;
+  if (tools[id]) {
+    open[id].restartTimer = () => {
+      clearTimeout(closeTimer);
+      closeTimer = setTimeout(closeWindow, 1000);
+    };
+    open[id].restartTimer();
+  }
+  m.onclick = () => { el.classList.add('min'); activateTop(); };
+  x.onclick = () => {
+    const maximized = el.classList.toggle('max');
+    x.textContent = maximized ? '❐' : '□';
+    x.title = maximized ? 'Восстановить' : 'Развернуть';
+    x.setAttribute('aria-label',x.title);
+  };
+  el.addEventListener('pointerdown', () => focusWin(id));
+  // перетаскивание
+  const tb = el.querySelector('.tb');
+  tb.ondblclick = e => { if (!e.target.closest('button')) x.click(); };
+  tb.addEventListener('pointerdown', e => {
+    if (id === 'integ' && matchMedia('(max-width:1100px)').matches) return;
+    if (e.target.tagName === 'BUTTON' || el.classList.contains('max')) return;
+    const dx = e.clientX - el.offsetLeft, dy = e.clientY - el.offsetTop; tb.setPointerCapture(e.pointerId); tb.style.cursor = 'grabbing';
+    const mv = ev => { el.style.left = Math.max(-200, Math.min(innerWidth - 80, ev.clientX - dx)) + 'px'; el.style.top = Math.max(0, Math.min(innerHeight - 80, ev.clientY - dy)) + 'px'; };
+    const up = () => { tb.removeEventListener('pointermove', mv); tb.removeEventListener('pointerup', up); tb.style.cursor = ''; };
+    tb.addEventListener('pointermove', mv); tb.addEventListener('pointerup', up);
+  });
+  focusWin(id);
+}
+function activateTop() {
+  const visible = Object.entries(open).filter(([,w]) => !w.el.classList.contains('min'));
+  visible.sort((a,b) => b[1].el.style.zIndex-a[1].el.style.zIndex);
+  if (visible.length) focusWin(visible[0][0]);
+  else tasks();
+}
+const pinned=['integ','chrome','phpstorm','docker'];
+function tasks() {
+  const ids = [...new Set([...pinned, ...Object.keys(open)])];
+  $('tasks').innerHTML = ids.map(id => {
+    const el = open[id]?.el;
+    const active = el && !el.classList.contains('min') && el.classList.contains('active');
+    return `<button title="${APPS[id].t}" aria-label="${APPS[id].t}" class="${el?'running':''} ${active?'on':''}" data-id="${id}">${art(id)}</button>`;
+  }).join('');
+}
+$('tasks').onclick = e => {
+  const b=e.target.closest('button'); if(!b) return;
+  const id=b.dataset.id, el=open[id]?.el;
+  if(el && !el.classList.contains('min') && el.classList.contains('active')) {
+    el.classList.add('min'); activateTop();
+  } else openApp(id);
+};
+$('icons').innerHTML = Object.entries(APPS).map(([id,a]) =>
+  `<button class="ico" data-id="${id}">${art(id)}<span>${a.t}</span></button>`).join('');
+const desktop = $('icons');
+const shortcuts = [...desktop.children];
+const layoutKey = 'portfolio.desktop.layout.v1';
+let layouts = {};
+try {
+  const saved = JSON.parse(localStorage.getItem(layoutKey));
+  if (saved && typeof saved === 'object') layouts = saved;
+} catch { /* The desktop also works when storage is unavailable. */ }
+
+function layout() {
+  const mode = matchMedia('(max-width:760px)').matches ? 'mobile' : 'desktop';
+  return layouts[mode] ||= {};
+}
+function canvasSize() {
+  // Measure the original grid, including rows outside a short viewport.
+  return {
+    width: Math.max(desktop.clientWidth, ...shortcuts.map(b => b.offsetLeft + b.offsetWidth)),
+    height: Math.max(desktop.clientHeight, ...shortcuts.map(b => b.offsetTop + b.offsetHeight))
+  };
+}
+function place(button, x, y) {
+  button.style.transform = `translate(${x - button.offsetLeft}px,${y - button.offsetTop}px)`;
+}
+function restoreLayout() {
+  const size = canvasSize();
+  for (const b of shortcuts) {
+    const pos = layout()[b.dataset.id];
+    if (pos && Number.isFinite(pos.x) && Number.isFinite(pos.y)) {
+      place(b, pos.x * (size.width - b.offsetWidth), pos.y * (size.height - b.offsetHeight));
+      b.style.zIndex = pos.order;
+    } else {
+      b.style.transform = '';
+      b.style.zIndex = '';
+    }
+  }
+}
+let drag = null, suppressClick = null;
+desktop.addEventListener('pointerdown', e => {
+  const b = e.target.closest('.ico');
+  if (!b || !e.isPrimary || e.button !== 0 || drag) return;
+  suppressClick = null;
+  const rect = b.getBoundingClientRect();
+  drag = {b, id:e.pointerId, startX:e.clientX, startY:e.clientY,
+    grabX:e.clientX - rect.left, grabY:e.clientY - rect.top, size:canvasSize(), moved:false};
+  b.setPointerCapture(e.pointerId);
+});
+function moveIcon(e) {
+  if (!drag || e.pointerId !== drag.id) return;
+  const {b,size} = drag;
+  if (!drag.moved) {
+    if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) < 5) return;
+    drag.moved = true;
+    b.classList.add('dragging');
+    b.style.zIndex = 1 + Math.max(0, ...shortcuts.map(icon => Number(icon.style.zIndex)));
+  }
+  const rect = desktop.getBoundingClientRect();
+  drag.x = Math.max(0, Math.min(size.width - b.offsetWidth, e.clientX - rect.left + desktop.scrollLeft - drag.grabX));
+  drag.y = Math.max(0, Math.min(size.height - b.offsetHeight, e.clientY - rect.top + desktop.scrollTop - drag.grabY));
+  place(b, drag.x, drag.y);
+}
+desktop.addEventListener('pointermove', moveIcon);
+desktop.addEventListener('pointerup', e => {
+  if (!drag || e.pointerId !== drag.id) return;
+  moveIcon(e);
+  const {b,moved,x,y,size} = drag;
+  drag = null;
+  if (!moved) return;
+  suppressClick = b;
+  b.classList.remove('dragging');
+  layout()[b.dataset.id] = {x:x / Math.max(1,size.width - b.offsetWidth),
+    y:y / Math.max(1,size.height - b.offsetHeight), order:Number(b.style.zIndex)};
+  try { localStorage.setItem(layoutKey, JSON.stringify(layouts)); } catch {}
+});
+function cancelDrag() {
+  if (drag) {
+    drag.b.classList.remove('dragging');
+    drag = null;
+  }
+  restoreLayout();
+}
+desktop.addEventListener('lostpointercapture', e => { if (drag?.id === e.pointerId) cancelDrag(); });
+new ResizeObserver(cancelDrag).observe(desktop);
+restoreLayout();
+desktop.onclick = e => {
+  const b = e.target.closest('button');
+  if (b && (e.detail === 0 || b !== suppressClick)) openApp(b.dataset.id);
+  suppressClick = null;
+};
+
+$('menu').innerHTML = '<input id="query" type="search" aria-label="Поиск приложений" placeholder="Найти приложение"><div id="results"></div>';
+function menuItems() {
+  const query=$('query').value.trim().toLocaleLowerCase('ru');
+  let html='';
+  for (const [heading, ids] of [['Портфолио',Object.keys(folders)],['Приложения',Object.keys(tools)]]) {
+    const matches=ids.filter(id=>APPS[id].t.toLocaleLowerCase('ru').includes(query));
+    if(matches.length) html+=`<h2>${heading}</h2><div class="menu-grid">` +
+      matches.map(id=>`<button data-id="${id}">${art(id)}${APPS[id].t}</button>`).join('') + '</div>';
+  }
+  $('results').innerHTML=html || '<p>Приложения не найдены</p>';
+}
+function menuState(on) {
+  $('menu').classList.toggle('on',on);
+  $('start').setAttribute('aria-expanded',String(on));
+  if(on) { $('query').value=''; menuItems(); $('query').focus(); }
+}
+$('start').onclick=()=>menuState(!$('menu').classList.contains('on'));
+$('find').onclick=()=>menuState(true);
+$('query').oninput=menuItems;
+$('query').onkeydown=e=>{if(e.key==='Enter') $('results').querySelector('button')?.click();};
+$('menu').onclick=e=>{const b=e.target.closest('[data-id]'); if(b) openApp(b.dataset.id);};
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('#menu,#start,#find')) menuState(false);});
+document.addEventListener('keydown',e=>{if(e.key==='Escape' && $('menu').classList.contains('on')){menuState(false);$('start').focus();}});
+$('showDesk').onclick=()=>{
+  Object.values(open).forEach(w=>w.el.classList.add('min'));menuState(false);tasks();
+};
+function clock() {
+  const now=new Date();
+  $('clock').innerHTML=now.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+'<br>'+now.toLocaleDateString('ru-RU');
+}
+clock();setInterval(clock,1000);tasks();
+</script>
+</body>
+</html>
