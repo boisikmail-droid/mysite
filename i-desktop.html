@@ -33,6 +33,7 @@
   .side,.list{background:#f0f5f9}.list{background:#f7fafb}.side button,.list button{display:block;width:100%;padding:7px 9px;text-align:left;border-radius:4px}.side button:hover,.list button:hover,.menu button:hover{background:#deeaf2}.side button.on,.list button.on{background:#d5eafa;box-shadow:inset 3px 0 #1682c3}
   .side i{display:inline-block;width:8px;height:8px;margin-right:7px;border-radius:50%}.list small,.dim,.k{color:var(--dim)}.list small{display:block}
   .det h3,.pad h2{margin:0}.det ul{padding-left:19px}.tag{display:inline-block;padding:2px 7px;margin:0 4px 4px 0;font-size:12px;border:1px solid var(--line);border-radius:3px}.res{background:#eaf4ed;padding:8px}.hl{color:#196246}.pad{padding:22px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px;padding:16px}.cards>div{border-left:3px solid #6aaad0;padding:10px;background:#f2f6fa}
+  .job-stage{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);line-height:1.5}.job-stage h4{margin:0;font-size:15px}.job-stage p,.job-stage ul{margin:6px 0 0}.job-stage li+li{margin-top:5px}
   .bar{position:fixed;z-index:9999;inset:auto 0 0;height:var(--bar);display:grid;grid-template-columns:minmax(36px,1fr) auto minmax(140px,1fr);align-items:center;padding:0 10px;background:#edf5f9ed;backdrop-filter:blur(20px);border-top:1px solid #fff9}
   .dock,#tasks,.tray{display:flex;align-items:center;gap:3px;min-width:0}.dock{max-width:62vw}.dock button,.deskbtn{height:40px;min-width:40px;border-radius:4px;position:relative;display:grid;place-items:center;padding:6px}
   .dock button:hover,.dock button.on,.deskbtn:hover{background:#fff}.dock .art{--size:25px}.dock .running:after{content:'';position:absolute;width:6px;height:3px;bottom:1px;background:#8f9da5;border-radius:3px}.dock .on:after{width:16px;background:#147cb8}
@@ -244,11 +245,18 @@ const render = {
         <img src="desktop-assets/diploma-${e.years}-thumb.jpg" width="96" height="72" alt="">Открыть диплом</button>
     </article>`).join('')}</div>`,
   exp: (root) => {
-    root.innerHTML = `<div class="split" style="grid-template-columns:240px 1fr"><div class="list" id="jl"></div><div class="det" id="jd"></div></div>`;
+    root.innerHTML = `<div class="split" style="grid-template-columns:240px minmax(0,1fr)"><div class="list" id="jl"></div><div class="det" id="jd"></div></div>`;
+    const detail = root.querySelector('#jd');
     const pick = id => { const j = S.jobs.find(x => x.id === id);
       root.querySelectorAll('#jl button').forEach(b => b.classList.toggle('on', b.dataset.id === id));
-      root.querySelector('#jd').innerHTML = `<h3>${j.role}</h3><div class="k">${j.company} · ${j.from} — ${j.to}</div><p>${j.summary}</p>
-        <ul>${j.stages.map(s => `<li class="${s.hl ? 'hl' : ''}"><b>${s.t}</b><span class="dim"> — ${s.d}</span></li>`).join('')}</ul>`; };
+      detail.innerHTML = `<h3>${j.role}</h3><div class="k">${j.company} · ${j.from} — ${j.to}</div><p>${j.summary}</p>
+        ${j.stages.map(s => `<section class="job-stage">
+          <h4${s.hl ? ' class="hl"' : ''}>${s.t}</h4><p>${s.d}</p>
+          ${s.points ? `<ul>${s.points.map(point => `<li>${point}</li>`).join('')}</ul>` : ''}
+          ${s.stack ? `<p class="dim">${s.stack.map(tech => `<span class="tag">${tech}</span>`).join('')}</p>` : ''}
+        </section>`).join('')}`;
+      detail.scrollTop = 0;
+    };
     root.querySelector('#jl').innerHTML = S.jobs.map(j => `<button data-id="${j.id}">${j.company}<small>${j.role} · ${j.from}–${j.to}</small></button>`).join('');
     root.querySelector('#jl').onclick = e => { const b = e.target.closest('button'); if (b) pick(b.dataset.id); };
     pick(S.jobs[0].id);
