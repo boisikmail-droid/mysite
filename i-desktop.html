@@ -249,7 +249,7 @@ const render = {
     const detail = root.querySelector('#jd');
     const pick = id => { const j = S.jobs.find(x => x.id === id);
       root.querySelectorAll('#jl button').forEach(b => b.classList.toggle('on', b.dataset.id === id));
-      detail.innerHTML = `<h3>${j.role}</h3><div class="k">${j.company} · ${j.from} — ${j.to}</div><p>${j.summary}</p>
+      detail.innerHTML = `<h3>${j.role}</h3><div class="k">${j.company} · ${j.from} — ${j.to}</div>${j.summary ? `<p>${j.summary}</p>` : ''}
         ${j.stages.map(s => `<section class="job-stage">
           <h4${s.hl ? ' class="hl"' : ''}>${s.t}</h4><p>${s.d}</p>
           ${s.points ? `<ul>${s.points.map(point => `<li>${point}</li>`).join('')}</ul>` : ''}
