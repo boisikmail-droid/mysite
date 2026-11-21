@@ -214,7 +214,6 @@ const contactLinks = `<div class="profile-links">
   <a href="https://t.me/melnikovusername" target="_blank" rel="noopener">Telegram · @melnikovusername</a>
   <a href="mailto:boisik@mail.ru">boisik@mail.ru</a>
   <a href="tel:+79781078422">+7 (978) 107-84-22</a>
-  <a href="https://set.ki/account/2xb47Z6" target="_blank" rel="noopener">Профиль в Сетке</a>
   <a href="https://github.com/boisik" target="_blank" rel="noopener">GitHub · boisik</a>
   <a href="https://github.com/boisikmail-droid/" target="_blank" rel="noopener">GitHub · boisikmail-droid</a>
 </div>`;
@@ -224,8 +223,9 @@ const render = {
     <header class="profile-head"><img src="desktop-assets/viktor-melnikov.jpg" width="104" height="104" alt="Виктор Мельников">
       <div><h2>Виктор Мельников</h2><b>Full-stack разработчик</b><p>PHP · Symfony · Vue.js</p><p>Керчь · В веб-разработке с 2016 года</p></div></header>
     <section><h3>Обо мне</h3>
-      <p>Пишу бэкенд на PHP и Symfony, делаю интерфейсы на Vue.js и связываю продукты с внешними сервисами через API. Начинал с сайтов на CMS. В ReadyScript lab совмещал разработку и техподдержку, позже параллельно сопровождал два e-commerce-проекта.</p>
-      <p>В «Голосовых Технологиях» начинал PHP-разработчиком основного продукта. По мере роста объёма данных до 6 ТБ команда внедрила ClickHouse для больших отчётов и RabbitMQ для асинхронной обработки. В роли ведущего разработчика я участвовал в создании второй версии продукта и переходе на неё после тестирования. В новой версии LLM-технологии помогли автоматизировать бизнес-процессы.</p>
+      <p>Пишу бэкенд на PHP и Symfony, делаю интерфейсы на Vue.js и связываю продукты с внешними сервисами через API. Начинал с сайтов на CMS. В ReadyScript lab совмещал разработку и техподдержку, позже параллельно сопровождал несколько e-commerce-проектов.</p>
+      <p>В «Голосовых Технологиях» начинал PHP-разработчиком основного продукта. По мере роста объёма данных (до 6 ТБ) участвовал во внедрении новых технологий хранения и обработки данных с учётом уже выбранного стека. Мы добавили ClickHouse для формирования части отчётов. Я реализовал асинхронную обработку больших потоков данных через очереди RabbitMQ и перенёс файлы, связанные с бизнес-процессами, из локального NFS-хранилища в хранилище с S3 API.</p>
+      <p>В роли ведущего разработчика участвовал в создании второй версии продукта и переходе на неё после тестирования. В новой версии LLM-технологии помогли автоматизировать бизнес-процессы.</p>
       <p>В облачном колл-центре отвечал за синхронизацию с основным продуктом и отчётность. Для сервиса генерации контента с ИИ разработал все пользовательские интерфейсы на Vue.js, затем стал лидом проекта. Вместе с менеджером планировал спринты, отвечал за выполнение плана, организовывал деплой и писал документацию. Примеры интеграций собрал на отдельной карте в разделе «Интеграции».</p></section>
     <section><h3>Ключевые навыки</h3><dl>
       <dt>Веб-разработка</dt><dd>PHP, Symfony, JavaScript, Vue.js, jQuery, Twig, Smarty</dd>
@@ -234,7 +234,7 @@ const render = {
       <dt>Инфраструктура и диагностика</dt><dd>Linux, Docker, Git, CI/CD, Elasticsearch, Grafana</dd>
       <dt>Работа с командой и клиентами</dt><dd>Планирование спринтов, постановка задач, организация деплоя, документация и техническая поддержка</dd>
     </dl></section>
-    <section><h3>Формат работы</h3><p>Рассматриваю полную и частичную занятость, проекты и разовые задачи. Готов работать удалённо, в офисе или в гибридном формате, к переезду и командировкам.</p></section>
+    <section><h3>Формат работы</h3><p>Рассматриваю полную (в приоритете) и частичную занятость, проекты и разовые задачи. Предпочитаю удалённую работу. Готов к командировкам и к переезду, если переезд обязателен для работы и материально оправдан.</p></section>
     <section><h3>Контакты и GitHub</h3><p>Предпочитаю Telegram. Готов выполнить тестовое задание.</p>${contactLinks}</section>
     </article>`,
   contact: () => `<div class="pad"><h2>Контакты</h2><p>Виктор Мельников · Керчь</p>${contactLinks}</div>`,
@@ -334,6 +334,7 @@ function openApp(id) {
   }
   const a = APPS[id], n = Object.keys(open).length;
   const el = document.createElement('div'); el.className = 'win';
+  if (!tools[id]) el.classList.add('info-window');
   if (id === 'integ') el.classList.add('integration-window');
   if (id === 'integ') {
     el.style.cssText = 'left:clamp(12px,4.6vw,88px);top:12px;width:calc(100% - clamp(12px,4.6vw,88px) - 10px);height:calc(100% - var(--bar) - 24px)';
@@ -515,7 +516,27 @@ $('find').onclick=()=>menuState(true);
 $('query').oninput=menuItems;
 $('query').onkeydown=e=>{if(e.key==='Enter') $('results').querySelector('button')?.click();};
 $('menu').onclick=e=>{const b=e.target.closest('[data-id]'); if(b) openApp(b.dataset.id);};
-document.addEventListener('pointerdown',e=>{if(!e.target.closest('#menu,#start,#find')) menuState(false);});
+const isWindowBackdrop = target => !target.closest('.win, #menu, dialog, button');
+let backdropPress = null;
+document.addEventListener('pointerdown', e => {
+  if (e.isPrimary) {
+    backdropPress = e.button === 0 && isWindowBackdrop(e.target)
+      ? { id: e.pointerId, x: e.clientX, y: e.clientY }
+      : null;
+  }
+  if (!e.target.closest('#menu,#start,#find')) menuState(false);
+});
+document.addEventListener('pointerup', e => {
+  if (backdropPress?.id !== e.pointerId) return;
+  const { x, y } = backdropPress;
+  backdropPress = null;
+  if (isWindowBackdrop(e.target) && Math.hypot(e.clientX - x, e.clientY - y) <= 8) {
+    $('wins').querySelector('.info-window.active:not(.min) .tb .c')?.click();
+  }
+});
+document.addEventListener('pointercancel', e => {
+  if (backdropPress?.id === e.pointerId) backdropPress = null;
+});
 document.addEventListener('keydown',e=>{if(e.key==='Escape' && $('menu').classList.contains('on')){menuState(false);$('start').focus();}});
 $('showDesk').onclick=()=>{
   Object.values(open).forEach(w=>w.el.classList.add('min'));menuState(false);tasks();
