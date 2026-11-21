@@ -26,11 +26,11 @@
   .folder i{position:absolute;z-index:1;right:10%;bottom:13%;background:var(--folder);border:1px solid #ffffffb3;border-radius:3px;padding:1px 2px;color:#142b40;font:bold calc(var(--size,40px)*.24)/1 Tahoma,sans-serif}
   .win{position:absolute;display:flex;flex-direction:column;min-width:min(320px,100vw);min-height:180px;border:1px solid #8aa2b7;border-radius:7px;overflow:hidden;resize:both;background:#fbfdff;box-shadow:0 12px 42px #071b3650;animation:show .16s ease-out}
   @keyframes show{from{opacity:0;transform:translateY(8px) scale(.985)}}.win.active{box-shadow:0 16px 48px #102f4e65}.win.min{display:none}.win.max{inset:0 0 var(--bar)!important;width:auto!important;height:auto!important;border-radius:0;resize:none}
-  .tb{height:38px;display:flex;align-items:center;padding-left:12px;gap:0;background:#e4edf4;border-bottom:1px solid var(--line);touch-action:none;flex:none}
-  .tb .art{--size:19px;margin-right:8px}.tb .t{margin-right:auto;font-size:12px}.tb button{width:44px;height:100%;font-size:17px}.tb button:hover{background:#cbdbe6}.tb .c:hover{background:#c73539;color:white}
+  .tb{height:38px;display:flex;align-items:center;padding-left:12px;gap:0;background:#e4edf4;border-bottom:1px solid var(--line);flex:none}
+  .titlebar-caption{display:flex;align-items:center;flex:1;min-width:0;height:100%;touch-action:none}
+  .tb .art{--size:19px;margin-right:8px}.tb .t{min-width:0;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tb button{flex:none;width:44px;height:100%;font-size:17px;touch-action:manipulation}.tb button:hover{background:#cbdbe6}.tb .c:hover{background:#c73539;color:white}
   .body{flex:1;overflow:auto;user-select:text;min-height:0}
   .placeholder-window{min-width:min(220px,100vw);min-height:132px;resize:none}
-  .placeholder-window .tb .t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .smile{height:100%;display:grid;place-items:center;font:72px/1 "Segoe UI Emoji","Apple Color Emoji",sans-serif;background:#f8fbff}
   .split{display:grid;grid-template-columns:140px minmax(145px,.85fr) 1.15fr;height:100%}.split>div{padding:12px;overflow:auto;border-right:1px solid var(--line)}.split>div:last-child{border:0;padding:20px}
   .side,.list{background:#f0f5f9}.list{background:#f7fafb}.side button,.list button{display:block;width:100%;padding:7px 9px;text-align:left;border-radius:4px}.side button:hover,.list button:hover,.menu button:hover{background:#deeaf2}.side button.on,.list button.on{background:#d5eafa;box-shadow:inset 3px 0 #1682c3}
@@ -49,7 +49,7 @@
   .searchglyph{width:16px;height:16px;border:1.8px solid currentColor;border-radius:50%;position:relative}.searchglyph:after{content:'';position:absolute;width:8px;height:2px;background:currentColor;top:13px;left:11px;transform:rotate(45deg)}
   .tray{justify-self:end;gap:12px;font-size:11px}.clock{text-align:right;line-height:1.35;font-variant-numeric:tabular-nums}.deskbtn{border-left:1px solid #a7b7c2;border-radius:0;min-width:9px;padding:0;height:34px}
   .menu{display:none;position:fixed;bottom:calc(var(--bar) + 7px);left:50%;transform:translateX(-50%);width:min(460px,96vw);max-height:70dvh;overflow:auto;z-index:9999;padding:18px;background:#eef5faf7;border:1px solid #ffffffab;border-radius:8px;box-shadow:0 10px 45px #10283c55}.menu.on{display:block}.menu input{width:100%;padding:9px 12px;border:1px solid #bcccd8;border-bottom:2px solid #267db6;border-radius:4px}.menu h2{font-size:14px;margin:16px 4px 8px}.menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.menu-grid button{padding:7px;border-radius:5px;font-size:12px}.menu-grid .art{--size:25px;display:grid;margin:auto auto 3px}
-  @media(max-width:760px){.win:not(.placeholder-window){inset:0 0 var(--bar)!important;width:auto!important;height:auto!important;border-radius:0;resize:none}.split{height:auto;grid-template-columns:1fr!important}.split>div{overflow:visible;border:0;border-bottom:1px solid var(--line)}.side{display:flex;overflow:auto!important}.side button{width:auto;white-space:nowrap}.icons{--shortcut-layout:mobile;grid-auto-flow:row;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));grid-auto-columns:auto;grid-template-rows:none;grid-auto-rows:83px}.ico{width:100%}.bar{grid-template-columns:auto minmax(0,1fr) auto;gap:4px;padding:0 5px}.dock{max-width:none;overflow:hidden}.dock button{min-width:33px}.tray{gap:4px}.tray .status{display:none}.dock .art{--size:22px}}
+  @media(max-width:760px){.split{height:auto;grid-template-columns:1fr!important}.split>div{overflow:visible;border:0;border-bottom:1px solid var(--line)}.side{display:flex;overflow:auto!important}.side button{width:auto;white-space:nowrap}.icons{--shortcut-layout:mobile;grid-auto-flow:row;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));grid-auto-columns:auto;grid-template-rows:none;grid-auto-rows:83px}.ico{width:100%}.bar{grid-template-columns:auto minmax(0,1fr) auto;gap:4px;padding:0 5px}.dock{max-width:none;overflow:hidden}.dock button{min-width:33px}.tray{gap:4px}.tray .status{display:none}.dock .art{--size:22px}}
   @media(min-width:850px) and (min-height:650px){
     .icons{grid-template-rows:repeat(6,84px);grid-auto-columns:104px}
     .ico:nth-child(-n+5){grid-column:1}
@@ -70,7 +70,8 @@
   .ico[data-id=integ]>span:last-child{font-size:11px;line-height:1.12}
   @media(max-width:1100px){
     .win.integration-window{inset:0 0 var(--bar)!important;width:auto!important;height:auto!important;border-radius:0;resize:none}
-    .integration-window .tb{height:44px;touch-action:auto}
+    .integration-window .tb{height:44px}
+    .integration-window .titlebar-caption{touch-action:manipulation}
     .integration-window .tb .x{display:none}
     .integration-window .tb .t{min-width:0;line-height:1.15}
   }
@@ -126,6 +127,18 @@
   .startmark i:nth-child(4){background:linear-gradient(130deg,#ffed86,#e8ab30);transform:translateY(2px);border-radius:0 0 40% 8%}
   .menu{left:4px;bottom:var(--bar);transform:none;border:2px solid #345f9e;border-top:8px solid #5387bf;background:#f5f2e9;border-radius:7px 7px 0 0}
   @media(max-width:760px){.bar{gap:4px}#start{min-height:42px;padding:0 13px 1px 9px;font-size:19px}}
+  @media (pointer:coarse){
+    .win .tb{height:48px}.win .tb button{width:48px}
+    .menu input{font-size:16px}.menu button,#start,#find,#tasks button{touch-action:manipulation}
+  }
+  @media (max-width:760px), (pointer:coarse) and (max-height:439px) and (orientation:landscape){
+    body{position:absolute;top:var(--phone-viewport-top,0px);left:0;width:100%;height:var(--phone-viewport-height,100dvh);-webkit-text-size-adjust:100%;text-size-adjust:100%}
+    .bar,.menu{position:absolute}
+    .menu{width:min(460px,calc(100% - 8px));max-height:min(70dvh,calc(100% - var(--bar) - 8px));overscroll-behavior:contain}
+    .menu input{font-size:16px}
+    .win.info-window{inset:0 0 var(--bar)!important;width:auto!important;height:auto!important;border-radius:0;resize:none}
+    .win.info-window .tb .x{display:none}.info-window .titlebar-caption{touch-action:manipulation}
+  }
   .education-list{display:grid;gap:12px;padding:clamp(12px,3vw,24px);background:#edf2f5;font-family:"Segoe UI",sans-serif}
   .study{padding:16px clamp(12px,3vw,20px);background:#fff;border:1px solid #cfdae2;border-radius:8px;box-shadow:0 2px 6px #1a334710}
   .study header{display:flex;align-items:center;gap:16px}.school-mark{width:60px;height:60px;display:grid;place-items:center;flex:none;color:#32556b;font:700 14px Georgia,serif;background:#f4f7f8;border-radius:6px}
@@ -350,7 +363,15 @@ diplomaViewer.addEventListener('click', event => {
   const r = diplomaViewer.getBoundingClientRect();
   if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) diplomaViewer.close();
 });
-function focusWin(id) { Object.values(open).forEach(w => w.el.classList.remove('active')); const w = open[id]; if (!w) return; w.el.style.zIndex = ++z; w.el.classList.remove('min'); w.el.classList.add('active'); tasks(); }
+function focusWin(id) {
+  const w = open[id];
+  if (!w || (w.el.classList.contains('active') && !w.el.classList.contains('min'))) return;
+  Object.values(open).forEach(win => win.el.classList.remove('active'));
+  w.el.style.zIndex = ++z;
+  w.el.classList.remove('min');
+  w.el.classList.add('active');
+  tasks();
+}
 window.addEventListener('message', e => {
   const frame = open.integ?.el.querySelector('.flow-app');
   if (frame && e.source === frame.contentWindow && e.data === 'flow:focus') focusWin('integ');
@@ -370,7 +391,7 @@ function openApp(id) {
   } else if (id === 'exp') {
     el.classList.add('experience-window');
   } else el.style.cssText = `width:${Math.min(a.w, innerWidth - 20)}px;height:${Math.min(a.h, innerHeight - 70)}px;left:${Math.max(0, (innerWidth-Math.min(a.w,innerWidth-20))/2 + ((n%5)-2)*9)}px;top:${Math.max(0,(innerHeight-54-Math.min(a.h,innerHeight-70))/2 + ((n%5)-2)*4)}px`;
-  el.innerHTML = `<div class="tb">${art(id)}<span class="t">${a.t}</span><button class="m" title="Свернуть" aria-label="Свернуть">−</button><button class="x" title="Развернуть" aria-label="Развернуть">□</button><button class="c" title="Закрыть" aria-label="Закрыть">×</button></div><div class="body"></div>`;
+  el.innerHTML = `<div class="tb"><div class="titlebar-caption">${art(id)}<span class="t">${a.t}</span></div><button class="m" title="Свернуть" aria-label="Свернуть">−</button><button class="x" title="Развернуть" aria-label="Развернуть">□</button><button class="c" title="Закрыть" aria-label="Закрыть">×</button></div><div class="body"></div>`;
   $('wins').appendChild(el);
   const body = el.querySelector('.body');
   const content = tools[id] ? `<div class="smile">${toolSmiles[id]}</div>` : render[id](body);
@@ -401,15 +422,19 @@ function openApp(id) {
   };
   el.addEventListener('pointerdown', () => focusWin(id));
   // перетаскивание
-  const tb = el.querySelector('.tb');
-  tb.ondblclick = e => { if (!e.target.closest('button')) x.click(); };
-  tb.addEventListener('pointerdown', e => {
-    if (id === 'integ' && matchMedia('(max-width:1100px)').matches) return;
-    if (e.target.tagName === 'BUTTON' || el.classList.contains('max')) return;
-    const dx = e.clientX - el.offsetLeft, dy = e.clientY - el.offsetTop; tb.setPointerCapture(e.pointerId); tb.style.cursor = 'grabbing';
+  const caption = el.querySelector('.titlebar-caption');
+  caption.ondblclick = () => { if (getComputedStyle(x).display !== 'none') x.click(); };
+  caption.addEventListener('pointerdown', e => {
+    if (!e.isPrimary || e.button !== 0 || el.classList.contains('max') || getComputedStyle(caption).touchAction !== 'none') return;
+    const dx = e.clientX - el.offsetLeft, dy = e.clientY - el.offsetTop;
+    caption.setPointerCapture(e.pointerId);
+    caption.style.cursor = 'grabbing';
     const mv = ev => { el.style.left = Math.max(-200, Math.min(innerWidth - 80, ev.clientX - dx)) + 'px'; el.style.top = Math.max(0, Math.min(innerHeight - 80, ev.clientY - dy)) + 'px'; };
-    const up = () => { tb.removeEventListener('pointermove', mv); tb.removeEventListener('pointerup', up); tb.style.cursor = ''; };
-    tb.addEventListener('pointermove', mv); tb.addEventListener('pointerup', up);
+    caption.addEventListener('pointermove', mv);
+    caption.addEventListener('lostpointercapture', () => {
+      caption.removeEventListener('pointermove', mv);
+      caption.style.cursor = '';
+    }, {once:true});
   });
   focusWin(id);
 }
@@ -538,13 +563,19 @@ function menuItems() {
   }
   $('results').innerHTML=html || '<p>Приложения не найдены</p>';
 }
-function menuState(on) {
-  $('menu').classList.toggle('on',on);
+function menuState(on, focusSearch = false) {
+  const menu = $('menu');
+  const wasOpen = menu.classList.contains('on');
+  menu.classList.toggle('on',on);
   $('start').setAttribute('aria-expanded',String(on));
-  if(on) { $('query').value=''; menuItems(); $('query').focus(); }
+  if (on && !wasOpen) {
+    $('query').value = '';
+    menuItems();
+  }
+  if (on && focusSearch) $('query').focus({preventScroll:true});
 }
-$('start').onclick=()=>menuState(!$('menu').classList.contains('on'));
-$('find').onclick=()=>menuState(true);
+$('start').onclick=()=>menuState(!$('menu').classList.contains('on'), matchMedia('(hover:hover) and (pointer:fine)').matches);
+$('find').onclick=()=>menuState(true, true);
 $('query').oninput=menuItems;
 $('query').onkeydown=e=>{if(e.key==='Enter') $('results').querySelector('button')?.click();};
 $('menu').onclick=e=>{const b=e.target.closest('[data-id]'); if(b) openApp(b.dataset.id);};
@@ -556,18 +587,21 @@ document.addEventListener('pointerdown', e => {
       ? { id: e.pointerId, x: e.clientX, y: e.clientY }
       : null;
   }
-  if (!e.target.closest('#menu,#start,#find')) menuState(false);
 });
 document.addEventListener('pointerup', e => {
   if (backdropPress?.id !== e.pointerId) return;
   const { x, y } = backdropPress;
   backdropPress = null;
   if (isWindowBackdrop(e.target) && Math.hypot(e.clientX - x, e.clientY - y) <= 8) {
-    $('wins').querySelector('.info-window.active:not(.min) .tb .c')?.click();
+    if ($('menu').classList.contains('on')) menuState(false);
+    else $('wins').querySelector('.info-window.active:not(.min) .tb .c')?.click();
   }
 });
 document.addEventListener('pointercancel', e => {
   if (backdropPress?.id === e.pointerId) backdropPress = null;
+});
+document.addEventListener('click', e => {
+  if ($('menu').classList.contains('on') && !e.target.closest('#menu,#start,#find')) menuState(false);
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape' && $('menu').classList.contains('on')){menuState(false);$('start').focus();}});
 $('showDesk').onclick=()=>{
@@ -576,6 +610,25 @@ $('showDesk').onclick=()=>{
 function clock() {
   const now=new Date();
   $('clock').innerHTML=now.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})+'<br>'+now.toLocaleDateString('ru-RU');
+}
+const viewport = window.visualViewport;
+if (viewport) {
+  const fitPhoneViewport = () => {
+    if (Math.abs(viewport.scale - 1) > .01) return;
+    const style = document.documentElement.style;
+    const top = Math.max(0, viewport.pageTop);
+    if (Math.abs(viewport.width - innerWidth) <= 1 && (Math.abs(viewport.height - innerHeight) > 1 || top > 1)) {
+      style.setProperty('--phone-viewport-height', `${viewport.height}px`);
+      style.setProperty('--phone-viewport-top', `${top}px`);
+    } else {
+      style.removeProperty('--phone-viewport-height');
+      style.removeProperty('--phone-viewport-top');
+    }
+  };
+  viewport.addEventListener('resize', fitPhoneViewport);
+  viewport.addEventListener('scroll', fitPhoneViewport);
+  window.addEventListener('resize', fitPhoneViewport);
+  fitPhoneViewport();
 }
 clock();setInterval(clock,1000);tasks();
 </script>
