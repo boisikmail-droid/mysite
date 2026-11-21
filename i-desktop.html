@@ -28,7 +28,10 @@
   @keyframes show{from{opacity:0;transform:translateY(8px) scale(.985)}}.win.active{box-shadow:0 16px 48px #102f4e65}.win.min{display:none}.win.max{inset:0 0 var(--bar)!important;width:auto!important;height:auto!important;border-radius:0;resize:none}
   .tb{height:38px;display:flex;align-items:center;padding-left:12px;gap:0;background:#e4edf4;border-bottom:1px solid var(--line);touch-action:none;flex:none}
   .tb .art{--size:19px;margin-right:8px}.tb .t{margin-right:auto;font-size:12px}.tb button{width:44px;height:100%;font-size:17px}.tb button:hover{background:#cbdbe6}.tb .c:hover{background:#c73539;color:white}
-  .body{flex:1;overflow:auto;user-select:text;min-height:0}.smile{height:100%;display:grid;place-items:center;font-size:68px;background:#f8fbff}
+  .body{flex:1;overflow:auto;user-select:text;min-height:0}
+  .placeholder-window{min-width:min(220px,100vw);min-height:132px;resize:none}
+  .placeholder-window .tb .t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .smile{height:100%;display:grid;place-items:center;font:72px/1 "Segoe UI Emoji","Apple Color Emoji",sans-serif;background:#f8fbff}
   .split{display:grid;grid-template-columns:140px minmax(145px,.85fr) 1.15fr;height:100%}.split>div{padding:12px;overflow:auto;border-right:1px solid var(--line)}.split>div:last-child{border:0;padding:20px}
   .side,.list{background:#f0f5f9}.list{background:#f7fafb}.side button,.list button{display:block;width:100%;padding:7px 9px;text-align:left;border-radius:4px}.side button:hover,.list button:hover,.menu button:hover{background:#deeaf2}.side button.on,.list button.on{background:#d5eafa;box-shadow:inset 3px 0 #1682c3}
   .side i{display:inline-block;width:8px;height:8px;margin-right:7px;border-radius:50%}.list small,.dim,.k{color:var(--dim)}.list small{display:block}
@@ -36,6 +39,9 @@
   .job-stage{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);line-height:1.5}.job-stage h4{margin:0;font-size:15px}.job-stage p,.job-stage ul{margin:6px 0 0}.job-stage li+li{margin-top:5px}
   .job-stage strong{font-weight:750}
   .job-stage .tag{padding:4px 10px;margin:2px 6px 4px 0;font-size:14px;font-weight:650;color:#fff;background:#1559bc;border-color:#1559bc}
+  .experience-window{--exp-width:min(1080px,calc(100vw - 20px));--exp-height:min(760px,calc(100dvh - var(--bar) - 24px));width:var(--exp-width);height:var(--exp-height);left:calc((100vw - var(--exp-width))/2);top:calc((100dvh - var(--bar) - var(--exp-height))/2);max-width:100vw;max-height:calc(100dvh - var(--bar))}
+  .job-next{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:2px 16px;width:100%;margin-top:22px;padding:10px 14px;border:1px solid #adc8e1;border-radius:6px;background:#eaf4ff;color:#154b82;text-align:left}
+  .job-next:hover{background:#dceeff}.job-next-label{font-size:12px}.job-next strong{grid-column:1}.job-next-arrow{grid-area:1/2/span 2;font-size:20px}
   .bar{position:fixed;z-index:9999;inset:auto 0 0;height:var(--bar);display:grid;grid-template-columns:minmax(36px,1fr) auto minmax(140px,1fr);align-items:center;padding:0 10px;background:#edf5f9ed;backdrop-filter:blur(20px);border-top:1px solid #fff9}
   .dock,#tasks,.tray{display:flex;align-items:center;gap:3px;min-width:0}.dock{max-width:62vw}.dock button,.deskbtn{height:40px;min-width:40px;border-radius:4px;position:relative;display:grid;place-items:center;padding:6px}
   .dock button:hover,.dock button.on,.deskbtn:hover{background:#fff}.dock .art{--size:25px}.dock .running:after{content:'';position:absolute;width:6px;height:3px;bottom:1px;background:#8f9da5;border-radius:3px}.dock .on:after{width:16px;background:#147cb8}
@@ -43,7 +49,7 @@
   .searchglyph{width:16px;height:16px;border:1.8px solid currentColor;border-radius:50%;position:relative}.searchglyph:after{content:'';position:absolute;width:8px;height:2px;background:currentColor;top:13px;left:11px;transform:rotate(45deg)}
   .tray{justify-self:end;gap:12px;font-size:11px}.clock{text-align:right;line-height:1.35;font-variant-numeric:tabular-nums}.deskbtn{border-left:1px solid #a7b7c2;border-radius:0;min-width:9px;padding:0;height:34px}
   .menu{display:none;position:fixed;bottom:calc(var(--bar) + 7px);left:50%;transform:translateX(-50%);width:min(460px,96vw);max-height:70dvh;overflow:auto;z-index:9999;padding:18px;background:#eef5faf7;border:1px solid #ffffffab;border-radius:8px;box-shadow:0 10px 45px #10283c55}.menu.on{display:block}.menu input{width:100%;padding:9px 12px;border:1px solid #bcccd8;border-bottom:2px solid #267db6;border-radius:4px}.menu h2{font-size:14px;margin:16px 4px 8px}.menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.menu-grid button{padding:7px;border-radius:5px;font-size:12px}.menu-grid .art{--size:25px;display:grid;margin:auto auto 3px}
-  @media(max-width:760px){.win{inset:0 0 var(--bar)!important;width:auto!important;height:auto!important;border-radius:0;resize:none}.split{height:auto;grid-template-columns:1fr!important}.split>div{overflow:visible;border:0;border-bottom:1px solid var(--line)}.side{display:flex;overflow:auto!important}.side button{width:auto;white-space:nowrap}.icons{grid-auto-flow:row;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));grid-auto-columns:auto;grid-template-rows:none;grid-auto-rows:83px}.ico{width:100%}.bar{grid-template-columns:auto minmax(0,1fr) auto;gap:4px;padding:0 5px}.dock{max-width:none;overflow:hidden}.dock button{min-width:33px}.tray{gap:4px}.tray .status{display:none}.dock .art{--size:22px}}
+  @media(max-width:760px){.win:not(.placeholder-window){inset:0 0 var(--bar)!important;width:auto!important;height:auto!important;border-radius:0;resize:none}.split{height:auto;grid-template-columns:1fr!important}.split>div{overflow:visible;border:0;border-bottom:1px solid var(--line)}.side{display:flex;overflow:auto!important}.side button{width:auto;white-space:nowrap}.icons{grid-auto-flow:row;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));grid-auto-columns:auto;grid-template-rows:none;grid-auto-rows:83px}.ico{width:100%}.bar{grid-template-columns:auto minmax(0,1fr) auto;gap:4px;padding:0 5px}.dock{max-width:none;overflow:hidden}.dock button{min-width:33px}.tray{gap:4px}.tray .status{display:none}.dock .art{--size:22px}}
   @media(min-width:850px) and (min-height:650px){
     .icons{grid-template-rows:repeat(6,84px);grid-auto-columns:104px}
     .ico:nth-child(-n+5){grid-column:1}
@@ -185,7 +191,7 @@
 const S = window.SITE, P = S.person, $ = id => document.getElementById(id);
 const APPS = {
   about:{ t:'Обо мне', i:'👤', w:740, h:710 }, integ:{ t:'Реализованные мной интеграции', i:'🔌', w:1240, h:820 },
-  exp:{ t:'Опыт', i:'💼', w:820, h:500 }, edu:{ t:'Образование', i:'🎓', w:760, h:680 }, contact:{ t:'Контакты', i:'✉️', w:420, h:260 }
+  exp:{ t:'Опыт', i:'💼' }, edu:{ t:'Образование', i:'🎓', w:760, h:680 }, contact:{ t:'Контакты', i:'✉️', w:420, h:260 }
 };
 const tools = {chrome:'Google Chrome',firefox:'Firefox',docker:'Docker Desktop',phpstorm:'PhpStorm',mongo:'MongoDB Compass',heidi:'HeidiSQL',notepad:'Notepad++',sourcetree:'Sourcetree',telegram:'Telegram',flclash:'FlClashX',pritunl:'Pritunl',radmin:'Radmin VPN',happ:'Happ'};
 const webTools = {
@@ -198,7 +204,13 @@ const webTools = {
   ck2: ['Crusader Kings II', 'ico']
 };
 for (const [id, [title]] of Object.entries(webTools)) tools[id] = title;
-for (const [id,t] of Object.entries(tools)) APPS[id]={t,w:340,h:230};
+for (const [id,t] of Object.entries(tools)) APPS[id]={t,w:248,h:142};
+const toolSmiles = {
+  chrome:'😎', firefox:'🦊', docker:'🐳', phpstorm:'🤓', mongo:'😃',
+  heidi:'😉', notepad:'😊', sourcetree:'🤠', telegram:'😁', flclash:'😈',
+  pritunl:'🧐', radmin:'🥸', happ:'😌', webstorm:'🤩', cursor:'🤖',
+  vscode:'😺', openserver:'😏', postman:'😋', dbeaver:'😄', ck2:'🤴'
+};
 const folders = {about:['#59b8e3','●'],integ:['#edb443','⤧'],exp:['#83a9e8','▤'],edu:['#97b58a','≡'],contact:['#cb9ace','@']};
 function art(id) {
   if (tools[id]) {
@@ -250,15 +262,21 @@ const render = {
   exp: (root) => {
     root.innerHTML = `<div class="split" style="grid-template-columns:240px minmax(0,1fr)"><div class="list" id="jl"></div><div class="det" id="jd"></div></div>`;
     const detail = root.querySelector('#jd');
-    const pick = id => { const j = S.jobs.find(x => x.id === id);
+    const pick = (id, fromNext = false) => {
+      const index = S.jobs.findIndex(job => job.id === id);
+      const j = S.jobs[index], next = S.jobs[index + 1];
       root.querySelectorAll('#jl button').forEach(b => b.classList.toggle('on', b.dataset.id === id));
-      detail.innerHTML = `<h3>${j.role}</h3><div class="k">${j.company} · ${j.from} — ${j.to}</div>${j.summary ? `<p>${j.summary}</p>` : ''}
+      detail.innerHTML = `<h3 tabindex="-1">${j.role}</h3><div class="k">${j.company} · ${j.from} — ${j.to}</div>${j.summary ? `<p>${j.summary}</p>` : ''}
         ${j.stages.map(s => `<section class="job-stage">
           <h4${s.hl ? ' class="hl"' : ''}>${s.t}</h4><p>${s.d}</p>
           ${s.points ? `<ul>${s.points.map(point => `<li>${point}</li>`).join('')}</ul>` : ''}
           ${s.stack ? `<p class="dim">${s.stack.map(tech => `<span class="tag">${tech}</span>`).join('')}</p>` : ''}
-        </section>`).join('')}`;
+        </section>`).join('')}
+        ${next ? `<button class="job-next" type="button"><span class="job-next-label">Следующий раздел</span><strong>${next.company}</strong><span class="job-next-arrow" aria-hidden="true">→</span></button>` : ''}`;
       detail.scrollTop = 0;
+      root.scrollTop = 0;
+      if (fromNext) detail.querySelector('h3').focus({preventScroll:true});
+      if (next) detail.querySelector('.job-next').onclick = () => pick(next.id, true);
     };
     root.querySelector('#jl').innerHTML = S.jobs.map(j => `<button data-id="${j.id}">${j.company}<small>${j.role} · ${j.from}–${j.to}</small></button>`).join('');
     root.querySelector('#jl').onclick = e => { const b = e.target.closest('button'); if (b) pick(b.dataset.id); };
@@ -334,15 +352,17 @@ function openApp(id) {
   }
   const a = APPS[id], n = Object.keys(open).length;
   const el = document.createElement('div'); el.className = 'win';
-  if (!tools[id]) el.classList.add('info-window');
-  if (id === 'integ') el.classList.add('integration-window');
+  el.classList.add(tools[id] ? 'placeholder-window' : 'info-window');
   if (id === 'integ') {
+    el.classList.add('integration-window');
     el.style.cssText = 'left:clamp(12px,4.6vw,88px);top:12px;width:calc(100% - clamp(12px,4.6vw,88px) - 10px);height:calc(100% - var(--bar) - 24px)';
+  } else if (id === 'exp') {
+    el.classList.add('experience-window');
   } else el.style.cssText = `width:${Math.min(a.w, innerWidth - 20)}px;height:${Math.min(a.h, innerHeight - 70)}px;left:${Math.max(0, (innerWidth-Math.min(a.w,innerWidth-20))/2 + ((n%5)-2)*9)}px;top:${Math.max(0,(innerHeight-54-Math.min(a.h,innerHeight-70))/2 + ((n%5)-2)*4)}px`;
   el.innerHTML = `<div class="tb">${art(id)}<span class="t">${a.t}</span><button class="m" title="Свернуть" aria-label="Свернуть">−</button><button class="x" title="Развернуть" aria-label="Развернуть">□</button><button class="c" title="Закрыть" aria-label="Закрыть">×</button></div><div class="body"></div>`;
   $('wins').appendChild(el);
   const body = el.querySelector('.body');
-  const content = tools[id] ? '<div class="smile" role="img" aria-label="Улыбка">🙂</div>' : render[id](body);
+  const content = tools[id] ? `<div class="smile">${toolSmiles[id]}</div>` : render[id](body);
   if (typeof content === 'string') body.innerHTML = content;
   open[id] = { el };
   const [m, x, c] = el.querySelectorAll('.tb button');
