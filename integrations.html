@@ -61,6 +61,11 @@
   .map-intro strong{color:var(--tx)}
   #roles{display:none}
   .folder #roles{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:8px 0}
+  .map-controls{display:none}
+  .folder .map-controls{display:flex;align-items:center;flex-wrap:wrap;gap:4px 12px;margin:8px 0}
+  .folder .map-controls #roles{margin:0}
+  #reset-layout{min-height:40px}
+  #reset-layout:disabled{opacity:.5;cursor:default}
   .role-choice{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--tx);font:inherit;font-size:13px;cursor:pointer}
   .role-choice[aria-pressed=true]{border-color:currentColor}
   .role-mark{display:inline-block;flex:none;width:22px;border-top:3px solid var(--role)}
@@ -138,7 +143,10 @@
     <p>Эта карта — «сборная солянка» моих разработок из разных проектов. Связи здесь условные. Для наглядности я добавил элементы инфраструктуры, с которыми работал.</p>
     <p><strong>Участвовал в разработке интеграций.</strong> Одни модули я писал с нуля, другие дорабатывал или переделывал после коллег. В некоторых менял лишь отдельные методы или обновлял логику, когда поставщик сервиса менял API.</p>
   </aside>
-  <div id="roles" role="group" aria-label="Моя роль в разработке"></div>
+  <div class="map-controls">
+    <div id="roles" role="group" aria-label="Моя роль в разработке"></div>
+    <button class="role-choice" id="reset-layout" type="button" disabled>Восстановить схему</button>
+  </div>
   <div class="ctl" id="chips" role="group" aria-label="Категории интеграций"></div><output id="category-status" role="status"></output>
   <div class="ctl"><label>Нагрузка <input type="range" id="load" min="1" max="12" value="4"></label><button class="btn" id="pause">⏸ Пауза</button></div>
   <nav class="views" id="views" aria-label="Вид интеграций"><button id="to-categories">Категории ↑</button><button data-view="map">Схема</button><button data-view="service">Сервис</button></nav>
@@ -220,12 +228,23 @@ function roleMark(key) {
 }
 let positionKey;
 let positions = {};
+const resetLayout = $('reset-layout');
+function updateResetButton() {
+  resetLayout.disabled = Object.keys(positions).length === 0;
+}
 if (folderView) {
   setView('map');
   document.querySelector('.kpi').remove();
   $('log').remove();
   field.style.setProperty('--team-color', roles.team.color);
   $('pause').closest('.ctl').remove();
+  resetLayout.onclick = () => {
+    try { localStorage.removeItem(positionKey); } catch {}
+    positions = {};
+    updateResetButton();
+    setView('map');
+    layout();
+  };
   $('roles').innerHTML = '<button class="role-choice" aria-pressed="true" data-role="">Все</button>' +
     Object.entries(roles).map(([key,role])=>`<button class="role-choice" data-role="${key}" aria-pressed="false">${roleMark(key)}${role.label} · ${allNodes.filter(n=>n.it.contributions[key]).length}</button>`).join('');
   $('roles').onclick=e=>{
@@ -360,6 +379,7 @@ function layout() {
   if (folderView && positionKey !== keyForSize()) {
     positionKey = keyForSize(); positions = {};
     try { positions = JSON.parse(localStorage.getItem(positionKey)) || {}; } catch {}
+    updateResetButton();
   }
   W = cv.clientWidth; H = cv.clientHeight;
   if (!W || !H) return;
@@ -407,25 +427,29 @@ if (folderView) {
     let drag, suppress = false;
     b.onpointerdown = e => {
       if (e.button || !e.isPrimary) return;
-      suppress=false; drag={x:e.clientX,y:e.clientY,ox:nd.x,oy:nd.y,id:e.pointerId};
+      suppress=false; drag={x:e.clientX,y:e.clientY,ox:nd.x,oy:nd.y,id:e.pointerId,positions};
       b.setPointerCapture(e.pointerId);
     };
     b.onpointermove = e => {
-      if (e.pointerId !== drag?.id) return;
+      if (e.pointerId !== drag?.id || drag.positions !== positions) return;
       const dx=e.clientX-drag.x, dy=e.clientY-drag.y;
       if (!suppress && Math.hypot(dx,dy)<5) return;
       suppress=true; b.classList.add('dragging'); place(nd,drag.ox+dx,drag.oy+dy);
     };
     b.onpointerup = e => {
       if (e.pointerId !== drag?.id) return;
-      if (suppress) {
+      if (suppress && drag.positions === positions) {
         positions[nd.key]={x:nd.x/W,y:nd.y/H};
         try {localStorage.setItem(positionKey,JSON.stringify(positions));} catch {}
+        updateResetButton();
       }
       drag=null; b.classList.remove('dragging');
     };
     b.onlostpointercapture = () => {
-      if (drag) { place(nd,drag.ox,drag.oy); drag=null; b.classList.remove('dragging'); }
+      if (drag) {
+        if (drag.positions === positions) place(nd,drag.ox,drag.oy);
+        drag=null; b.classList.remove('dragging');
+      }
     };
     b.onclick = e => {
       if (!suppress || !e.detail) {
